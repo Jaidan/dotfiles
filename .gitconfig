@@ -1,0 +1,15 @@
+[user]
+	name = John Williams
+	email = druidjaidan@gmail.com
+[core]
+	excludesfile = /home/jwilliams/.gitignore
+
+[alias]
+    co = checkout
+[color]
+	branch = auto
+	diff = auto
+	status = auto
+	interactive = auto
+[push]
+	default = matching
