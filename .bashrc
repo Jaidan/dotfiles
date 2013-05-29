@@ -13,7 +13,7 @@ source /etc/bash_completion.d/django_bash_completion
 export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
 # ... or force ignoredups and ignorespace
 export HISTCONTROL=ignoreboth
-export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-6-sun
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -111,10 +111,12 @@ function prompt {
     local GREEN=$'\e[1;32m'
     local MAGENTA=$'\e[1;35m'
     local NORMAL=$'\e[m'
-    local PROMPT="\[$NORMAL\]\u@\h:\[$GREEN\]\w \[$MAGENTA\]\$(__git_ps1)\[$NORMAL\]\$ "
+    local PROMPT="\[$NORMAL\]\u@localhost:\[$GREEN\]\w \[$MAGENTA\]\$(__git_ps1)\[$NORMAL\]\$ "
     PS1=$PROMPT
     PS2='> '
     PS4='+ '
 }
 
 prompt
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
