@@ -12,6 +12,7 @@ set nocompatible
 set hlsearch
 set incsearch
 set smartindent
+set ic
 
 syntax on
 filetype on
