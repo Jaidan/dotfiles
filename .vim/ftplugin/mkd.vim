@@ -206,3 +206,4 @@ cal <sid>MapNormVis( '[]', 'b:Markdown_GoPreviousSiblingHeader' )
 cal <sid>MapNormVis( ']u', 'b:Markdown_GoHeaderUp' )
 "menmonic: Current
 cal <sid>MapNormVis( ']c', 'b:Markdown_GoCurHeader' )
+set spell spelllang=en_us
