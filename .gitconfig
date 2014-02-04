@@ -1,9 +1,8 @@
 [user]
 	name = John Williams
-	email = john@creoagency.com
+	email = john@rover.com
 [core]
-	excludesfile = /home/jwilliams/.gitignore
-
+	excludesfile = ~/.gitignore
 [alias]
     co = checkout
 [color]
