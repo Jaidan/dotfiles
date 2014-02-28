@@ -27,4 +27,8 @@ autocmd FileType setlocal ominfunc=htmlcomplete#CompleteTags
 autocmd FileType setlocal ominfunc=xmlcomplete#Comple
 autocmd FileType php noremap <C-M> :w!<CR>:!php %<CR>
 autocmd FileType php noremap <C-L> :!php -l %<CR>
-autocmd FileType python noremap <C-L> :!pyflakes %<CR>
+autocmd FileType python map <C-L> :call Flake8()<CR>
+augroup vimrc_autocmds
+  autocmd BufEnter * highlight OverLength ctermbg=darkred guibg=#111111
+  autocmd BufEnter * match OverLength /\%81v.*/
+augroup END
