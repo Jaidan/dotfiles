@@ -21,6 +21,7 @@ filetype plugin on
 filetype indent on
 
 let g:tagbar_usearrows=1
+set runtimepath^=~/.vim/bundle/ctrlp.vim
 
 autocmd FileType c,cpp,slang setlocal cindent
 autocmd FileType c setlocal formatoptions+=ro
