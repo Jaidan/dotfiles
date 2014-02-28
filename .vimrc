@@ -20,6 +20,8 @@ filetype on
 filetype plugin on
 filetype indent on
 
+let g:tagbar_usearrows=1
+
 autocmd FileType c,cpp,slang setlocal cindent
 autocmd FileType c setlocal formatoptions+=ro
 autocmd FileType perl setlocal smartindent
@@ -28,7 +30,9 @@ autocmd FileType setlocal ominfunc=htmlcomplete#CompleteTags
 autocmd FileType setlocal ominfunc=xmlcomplete#Comple
 autocmd FileType php noremap <C-M> :w!<CR>:!php %<CR>
 autocmd FileType php noremap <C-L> :!php -l %<CR>
-autocmd FileType python map <C-L> :call Flake8()<CR>
+autocmd FileType python noremap <C-L> :call Flake8()<CR>
+nnoremap <leader>l :TagbarToggle<CR>
+
 augroup vimrc_autocmds
   autocmd BufEnter * highlight OverLength ctermbg=darkred guibg=#111111
   autocmd BufEnter * match OverLength /\%81v.*/
