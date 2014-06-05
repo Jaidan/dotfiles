@@ -13,6 +13,7 @@ set hlsearch
 set incsearch
 set smartindent
 set ic
+set hidden
 
 execute pathogen#infect()
 syntax on
@@ -23,6 +24,7 @@ filetype indent on
 let g:tagbar_usearrows=1
 let g:ctrlp_max_files = 0
 let g:ctrlp_root_markers = ['.ctrlp']
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 set wildignore+=*.pyc
 
