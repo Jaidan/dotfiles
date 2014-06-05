@@ -103,8 +103,7 @@ if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
-export PATH=$PATH:~/bin
-export PATH=$PATH:/usr/lib/jvm/java-6-openjdk/bin/
+export PATH=$PATH:$HOME/bin:/usr/lib/jvm/java-6-openjdk/bin/:$HOME/.rvm/bin
 export EDITOR=vim
 
 function prompt {
@@ -118,5 +117,3 @@ function prompt {
 }
 
 prompt
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting

@@ -16,3 +16,15 @@
 [submodule ".vim/bundle/gundo"]
 	path = .vim/bundle/gundo
 	url = http://github.com/sjl/gundo.vim.git
+[submodule ".vim/bundle/surround"]
+	path = .vim/bundle/surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule ".vim/bundle/unimparied"]
+	path = .vim/bundle/unimparied
+	url = git://github.com/tpope/vim-unimpaired.git
+[submodule ".vim/bundle/mustache"]
+	path = .vim/bundle/mustache
+	url = https://github.com/mustache/vim-mustache-handlebars.git
+[submodule ".vim/bundle/mbe"]
+	path = .vim/bundle/mbe
+	url = https://github.com/fholgado/minibufexpl.vim.git

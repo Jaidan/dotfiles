@@ -3,3 +3,5 @@
 *.swo
 userfiles/*
 *.bck
+.ctrlp
+ctags
