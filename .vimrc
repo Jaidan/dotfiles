@@ -51,6 +51,10 @@ autocmd FileType python noremap <C-L> :call Flake8()<CR>
 nnoremap <leader>l :TagbarToggle<CR>
 nnoremap <leader>u :GundoToggle<CR>
 nnoremap <leader>p :CtrlPTag<CR>
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
 
 augroup vimrc_autocmds
   autocmd BufEnter * highlight OverLength ctermbg=darkred guibg=#111111
