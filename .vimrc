@@ -1,6 +1,5 @@
 set background=dark
 set ruler
-set nu
 set backspace=indent,eol,start
 set wildmenu
 set ts=4
@@ -14,6 +13,15 @@ set incsearch
 set smartindent
 set ic
 set hidden
+set nobackup
+set noswapfile
+set title
+set relativenumber
+set ttyfast
+set laststatus=2
+set history=1000
+set undolevels=1000
+set splitright
 
 execute pathogen#infect()
 syntax on
@@ -24,9 +32,11 @@ filetype indent on
 let g:tagbar_usearrows=1
 let g:ctrlp_max_files = 0
 let g:ctrlp_root_markers = ['.ctrlp']
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$|venv'"
+let g:ctrlp_user_command = ['.git/', 'cd %s && git ls-files --exclude-standard -co']
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 set wildignore+=*.pyc
+set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 
 autocmd FileType c,cpp,slang setlocal cindent
 autocmd FileType c setlocal formatoptions+=ro
@@ -45,6 +55,13 @@ augroup vimrc_autocmds
   autocmd BufEnter * highlight OverLength ctermbg=darkred guibg=#111111
   autocmd BufEnter * match OverLength /\%81v.*/
 augroup END
+nnoremap <leader>p :CtrlPMRU<CR>
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+nnoremap j gj
+nnoremap k gk
 
 set tags=./ctags;$HOME
 
