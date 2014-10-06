@@ -104,6 +104,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 export PATH=$PATH:$HOME/bin:/usr/lib/jvm/java-6-openjdk/bin/:$HOME/.rvm/bin
+export PYTHONPATH=~/.vim/bundle/ropevim:$PYTHONPATH
 export EDITOR=vim
 
 function prompt {
