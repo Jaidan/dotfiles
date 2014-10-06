@@ -34,6 +34,7 @@ let g:ctrlp_max_files = 0
 let g:ctrlp_root_markers = ['.ctrlp']
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$|venv'"
 let g:ctrlp_user_command = ['.git/', 'cd %s && git ls-files --exclude-standard -co']
+let g:syntastic_python_flake8_args='--ignore=E123,E126,E127,E128 --max-complexity 10'
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 set wildignore+=*.pyc
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
