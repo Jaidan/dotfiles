@@ -22,6 +22,7 @@ set laststatus=2
 set history=1000
 set undolevels=1000
 set splitright
+set colorcolumn=+1
 
 execute pathogen#infect()
 syntax on
@@ -35,9 +36,15 @@ let g:ctrlp_root_markers = ['.ctrlp']
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$|venv'"
 let g:ctrlp_user_command = ['.git/', 'cd %s && git ls-files --exclude-standard -co']
 let g:syntastic_python_flake8_args='--ignore=E123,E126,E127,E128 --max-complexity 10'
+let g:tagbar_compact = 1
+let g:tagbar_statusline = 1
+let g:tagbar_left = 1
+let ropevim_vim_completion = 1
+let ropevim_extended_complete = 1
+let ropevim_guess_project = 1
+imap <c-space> <C-R>=RopeCodeAssistInsertMode()<CR>
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 set wildignore+=*.pyc
-set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 
 autocmd FileType c,cpp,slang setlocal cindent
 autocmd FileType c setlocal formatoptions+=ro
@@ -45,12 +52,16 @@ autocmd FileType perl setlocal smartindent
 autocmd FileType make setlocal noet
 autocmd FileType setlocal ominfunc=htmlcomplete#CompleteTags
 autocmd FileType setlocal ominfunc=xmlcomplete#Comple
+let g:ropevim_autoimport_modules = ["os.*","traceback","django.*","datetime","sys","urllib","urllib2"]
 autocmd FileType php noremap <C-M> :w!<CR>:!php %<CR>
-autocmd FileType php noremap <C-L> :!php -l %<CR>
-autocmd FileType python noremap <C-L> :call Flake8()<CR>
+autocmd FileType php noremap <leader>L :!php -l %<CR>
+autocmd FileType python noremap <leader>L :call Flake8()<CR>
+autocmd FileType python setlocal omnifunc=RopeCompleteFunc
 nnoremap <leader>l :TagbarToggle<CR>
 nnoremap <leader>u :GundoToggle<CR>
 nnoremap <leader>p :CtrlPTag<CR>
+nnoremap <leader>i :RopeAutoImport<CR>
+nnoremap <leader>o :RopeOrganizeImports<CR>
 map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
@@ -69,6 +80,14 @@ nnoremap j gj
 nnoremap k gk
 
 set tags=./ctags;$HOME
+
+hi User1 ctermbg=black ctermfg=green guibg=black guifg=green
+hi User2 ctermbg=black ctermfg=blue  guibg=red   guifg=blue
+
+set statusline=%<%f
+set statusline+=\ %2*\ %{tagbar#currenttag('[%s]','','f')}
+set statusline+=%1*\ %{fugitive#statusline()}
+set statusline+=\ %*%=%-14.(%l,%c%V%)\ %P
 
 python << EOF
 import vim
