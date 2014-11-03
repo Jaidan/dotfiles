@@ -62,6 +62,7 @@ nnoremap <leader>u :GundoToggle<CR>
 nnoremap <leader>p :CtrlPTag<CR>
 nnoremap <leader>i :RopeAutoImport<CR>
 nnoremap <leader>o :RopeOrganizeImports<CR>
+nnoremap <leader>t :NERDTreeToggle<CR>
 map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
