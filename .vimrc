@@ -23,8 +23,10 @@ set history=1000
 set undolevels=1000
 set splitright
 set colorcolumn=+1
+set t_Co=256
 
 execute pathogen#infect()
+colorscheme badwolf
 syntax on
 filetype on
 filetype plugin on
@@ -63,6 +65,8 @@ nnoremap <leader>p :CtrlPTag<CR>
 nnoremap <leader>i :RopeAutoImport<CR>
 nnoremap <leader>o :RopeOrganizeImports<CR>
 nnoremap <leader>t :NERDTreeToggle<CR>
+nnoremap <leader>c :cclose \| lclose<CR>
+
 map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
@@ -80,14 +84,14 @@ map <C-l> <C-w>l
 nnoremap j gj
 nnoremap k gk
 
-set tags=./ctags;$HOME
+set tags=./ctags;$HOME;
 
-hi User1 ctermbg=black ctermfg=green guibg=black guifg=green
-hi User2 ctermbg=black ctermfg=blue  guibg=red   guifg=blue
+hi User1 ctermfg=green guifg=green
+hi User2 ctermfg=blue guibg=default guifg=blue
 
 set statusline=%<%f
-set statusline+=\ %2*\ %{tagbar#currenttag('[%s]','','f')}
-set statusline+=%1*\ %{fugitive#statusline()}
+set statusline+=\ %#Function#\ %{tagbar#currenttag('[%s]','','f')}
+set statusline+=%#Title#\ %{fugitive#statusline()}
 set statusline+=\ %*%=%-14.(%l,%c%V%)\ %P
 
 python << EOF
