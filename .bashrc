@@ -4,9 +4,29 @@
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
-source /etc/bash_completion.d/apache2.2-common
-source /etc/bash_completion.d/git
-source /etc/bash_completion.d/django_bash_completion
+if [ -f ~/.git-prompt.sh ]; then
+    . ~/.git-prompt.sh
+fi
+if [ -f `brew --prefix`/etc/bash_completion ]; then
+    . `brew --prefix`/etc/bash_completion
+    . `brew --prefix`/etc/bash_completion.d/git-completion.bash
+else
+    . /etc/bash_completion.d/git
+    . /etc/bash_completion.d/django_bash_completion
+fi
+if [ -f `brew --prefix`/etc/bash_completion.d/git-completion.bash ]; then
+    . `brew --prefix`/etc/bash_completion.d/git-completion.bash
+fi
+if [ -f `brew --prefix`/etc/hub.bash_completion.sh ]; then
+    . `brew --prefix`/etc/bash_completion
+fi
+if [ -f /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-completion.bash ]; then
+    . /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-completion.bash
+fi
+
+if [ -f /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-prompt.sh ]; then
+    . /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-prompt.sh
+fi
 
 # don't put duplicate lines in the history. See bash(1) for more options
 # don't overwrite GNU Midnight Commander's setting of `ignorespace'.
@@ -59,6 +79,7 @@ else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
+export CLICOLOR=1
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
