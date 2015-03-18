@@ -40,3 +40,18 @@
 [submodule ".vim/bundle/vim-arduino-ino"]
 	path = .vim/bundle/vim-arduino-ino
 	url = https://github.com/jplaut/vim-arduino-ino.git
+[submodule ".vim/bundle/rainbow_parentheses.vim"]
+	path = .vim/bundle/rainbow_parentheses.vim
+	url = git@github.com:kien/rainbow_parentheses.vim.git
+[submodule ".vim/bundle/csapprox"]
+	path = .vim/bundle/csapprox
+	url = git@github.com:godlygeek/csapprox.git
+[submodule ".vim/bundle/badwolf"]
+	path = .vim/bundle/badwolf
+	url = git@github.com:sjl/badwolf.git
+[submodule ".vim/bundle/vim-arduino-syntax"]
+	path = .vim/bundle/vim-arduino-syntax
+	url = git@github.com:sudar/vim-arduino-syntax.git
+[submodule ".vim/bundle/--force"]
+	path = .vim/bundle/--force
+	url = git@github.com:sudar/vim-arduino-syntax.git
