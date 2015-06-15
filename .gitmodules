@@ -55,3 +55,6 @@
 [submodule ".vim/bundle/--force"]
 	path = .vim/bundle/--force
 	url = git@github.com:sudar/vim-arduino-syntax.git
+[submodule ".vim/bundle/scss-syntax.vim"]
+	path = .vim/bundle/scss-syntax.vim
+	url = git@github.com:cakebaker/scss-syntax.vim.git
