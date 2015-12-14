@@ -6,3 +6,7 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 export PATH="/usr/local/sbin:$PATH"
+
+source $HOME/rover/web/profile
+
+eval "$(docker-machine env default)"
