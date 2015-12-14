@@ -124,7 +124,7 @@ if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
-export PATH=$PATH:$HOME/bin:/usr/lib/jvm/java-6-openjdk/bin/:$HOME/.rvm/bin
+export PATH=$PATH:$HOME/bin:/usr/lib/jvm/java-6-openjdk/bin:$HOME/.rvm/bin
 export PYTHONPATH=~/.vim/bundle/ropevim:$PYTHONPATH
 export EDITOR=vim
 
@@ -139,3 +139,9 @@ function prompt {
 }
 
 prompt
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+export FZF_DEFAULT_COMMAND='
+  (git ls-files ||
+         find . -path "*/\.*" -prune -o -type f -print -o -type l -print |
+        sed s/^..//) 2> /dev/null'

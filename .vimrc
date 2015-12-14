@@ -33,13 +33,8 @@ filetype plugin on
 filetype indent on
 
 let g:tagbar_usearrows=1
-let g:ctrlp_max_files = 0
-let g:ctrlp_root_markers = ['.ctrlp']
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$|venv'"
-let g:ctrlp_user_command = ['.git/', 'cd %s && git ls-files --exclude-standard -co']
 let g:syntastic_python_flake8_args='--ignore=E123,E126,E127,E128 --max-complexity 10'
 let g:tagbar_compact = 1
-let g:tagbar_statusline = 1
 let g:tagbar_left = 1
 let ropevim_vim_completion = 1
 let ropevim_extended_complete = 1
@@ -61,11 +56,11 @@ autocmd FileType python noremap <leader>L :call Flake8()<CR>
 autocmd FileType python setlocal omnifunc=RopeCompleteFunc
 nnoremap <leader>l :TagbarToggle<CR>
 nnoremap <leader>u :GundoToggle<CR>
-nnoremap <leader>p :CtrlPTag<CR>
 nnoremap <leader>i :RopeAutoImport<CR>
 nnoremap <leader>o :RopeOrganizeImports<CR>
 nnoremap <leader>t :NERDTreeToggle<CR>
 nnoremap <leader>c :cclose \| lclose<CR>
+nnoremap <C-p> :FZF<CR>
 
 map <C-h> <C-w>h
 map <C-j> <C-w>j
@@ -76,7 +71,6 @@ augroup vimrc_autocmds
   autocmd BufEnter * highlight OverLength ctermbg=darkred guibg=#111111
   autocmd BufEnter * match OverLength /\%81v.*/
 augroup END
-nnoremap <leader>p :CtrlPMRU<CR>
 map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
@@ -85,14 +79,6 @@ nnoremap j gj
 nnoremap k gk
 
 set tags=./ctags;$HOME;
-
-hi User1 ctermfg=green guifg=green
-hi User2 ctermfg=blue guibg=default guifg=blue
-
-set statusline=%<%f
-set statusline+=\ %#Function#\ %{tagbar#currenttag('[%s]','','f')}
-set statusline+=%#Title#\ %{fugitive#statusline()}
-set statusline+=\ %*%=%-14.(%l,%c%V%)\ %P
 
 python << EOF
 import vim
@@ -125,4 +111,3 @@ def remove_breakpoints():
             current_line_number -= 1
     vim.command('normal %dG' % current_line_number)
 vim.command('map <leader>B :py remove_breakpoints()<CR>')
-EOF

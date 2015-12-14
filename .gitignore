@@ -6,3 +6,4 @@ userfiles/*
 .ctrlp
 ctags*
 .ropeproject
+.vim-django

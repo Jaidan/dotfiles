@@ -58,3 +58,12 @@
 [submodule ".vim/bundle/scss-syntax.vim"]
 	path = .vim/bundle/scss-syntax.vim
 	url = git@github.com:cakebaker/scss-syntax.vim.git
+[submodule ".vim/bundle/vim-python-test-runner"]
+	path = .vim/bundle/vim-python-test-runner
+	url = git@github.com:JarrodCTaylor/vim-python-test-runner.git
+[submodule ".vim/bundle/vim-airline"]
+	path = .vim/bundle/vim-airline
+	url = https://github.com/bling/vim-airline
+[submodule ".vim/bundle/fzf"]
+	path = .vim/bundle/fzf
+	url = git@github.com:junegunn/fzf.git
