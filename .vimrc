@@ -24,6 +24,7 @@ set undolevels=1000
 set splitright
 set colorcolumn=+1
 set t_Co=256
+set shell=bash\ --login
 
 execute pathogen#infect()
 colorscheme badwolf
@@ -33,9 +34,14 @@ filetype plugin on
 filetype indent on
 
 let g:tagbar_usearrows=1
-let g:syntastic_python_flake8_args='--ignore=E123,E126,E127,E128 --max-complexity 10'
+let g:syntastic_python_flake8_args='--ignore=E123,E126,E127,E128 --max-complexity 10 --max-line-length 160'
 let g:tagbar_compact = 1
 let g:tagbar_left = 1
+let g:airline#extensions#tagbar#flags = 'f'
+let g:airline#extensions#default#layout = [
+    \ [ 'a', 'b', 'c' ],
+    \ [ 'x', 'z', 'warning' ]
+    \ ]
 let ropevim_vim_completion = 1
 let ropevim_extended_complete = 1
 let ropevim_guess_project = 1
@@ -61,6 +67,11 @@ nnoremap <leader>o :RopeOrganizeImports<CR>
 nnoremap <leader>t :NERDTreeToggle<CR>
 nnoremap <leader>c :cclose \| lclose<CR>
 nnoremap <C-p> :FZF<CR>
+nnoremap <leader>C :DjangoTestClass<CR>
+nnoremap <leader>R :RerunLastTests<CR>
+nnoremap <leader>M :DjangoTestMethod<CR>
+nnoremap <leader>F :DjangoTestFile<CR>
+nnoremap <leader>A :DjangoTestApp<CR>
 
 map <C-h> <C-w>h
 map <C-j> <C-w>j
