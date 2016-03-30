@@ -42,11 +42,23 @@ let g:airline#extensions#default#layout = [
     \ [ 'a', 'b', 'c' ],
     \ [ 'x', 'z', 'warning' ]
     \ ]
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+
+let g:airline#extensions#tabline#left_sep = ''
+let g:airline#extensions#tabline#left_alt_sep = ''
 let ropevim_vim_completion = 1
 let ropevim_extended_complete = 1
 let ropevim_guess_project = 1
 imap <c-space> <C-R>=RopeCodeAssistInsertMode()<CR>
-set runtimepath^=~/.vim/bundle/ctrlp.vim
 set wildignore+=*.pyc
 
 autocmd FileType c,cpp,slang setlocal cindent
@@ -58,7 +70,6 @@ autocmd FileType setlocal ominfunc=xmlcomplete#Comple
 let g:ropevim_autoimport_modules = ["os.*","traceback","django.*","datetime","sys","urllib","urllib2"]
 autocmd FileType php noremap <C-M> :w!<CR>:!php %<CR>
 autocmd FileType php noremap <leader>L :!php -l %<CR>
-autocmd FileType python noremap <leader>L :call Flake8()<CR>
 autocmd FileType python setlocal omnifunc=RopeCompleteFunc
 nnoremap <leader>l :TagbarToggle<CR>
 nnoremap <leader>u :GundoToggle<CR>
