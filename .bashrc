@@ -115,7 +115,6 @@ fi
 #alias ll='ls -l'
 #alias la='ls -A'
 #alias l='ls -CF'
-alias mysql_gg_prod='mysql --host=68.233.5.160 -u greengoose_dev -pg00s3i5l00sE# greengoose_dev'
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
