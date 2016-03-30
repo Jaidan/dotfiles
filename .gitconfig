@@ -3,6 +3,7 @@
 	email = john@rover.com
 [core]
 	excludesfile = ~/.gitignore
+	editor = /usr/bin/vim
 [alias]
     co = checkout
 [color]
