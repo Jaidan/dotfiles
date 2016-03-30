@@ -1,0 +1,12 @@
+alias ctags="`brew --prefix`/bin/ctags"
+eval "$(hub alias -s)"
+
+alias tmux='tmux -2'
+alias ta='tmux attach -t'
+alias tnew='tmux new -s'
+alias tls='tmux ls'
+alias tkill='tmux kill-session -t'
+
+alias ev='vim ~/.vimrc'
+alias et='vim ~/.tmux.conf'
+alias ex='vim ~/.zshrc'
