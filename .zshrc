@@ -53,7 +53,7 @@ plugins=(git django docker python tmux virtualenv)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:~/bin:/usr/lib/jvm/java-6-openjdk/bin:/Users/johnwilliams/.rvm/bin:/Users/johnwilliams/.vim/bundle/fzf/bin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:~/bin:/usr/lib/jvm/java-6-openjdk/bin:$HOME/.rvm/bin:$HOME/.vim/bundle/fzf/bin"
 export PYTHONPATH=~/.vim/bundle/ropevim:$PYTHONPATH
 export FZF_DEFAULT_COMMAND='
   (git ls-files ||
@@ -103,3 +103,5 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.aliases
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

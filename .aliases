@@ -7,6 +7,8 @@ alias tnew='tmux new -s'
 alias tls='tmux ls'
 alias tkill='tmux kill-session -t'
 
+alias vim=nvim
 alias ev='vim ~/.vimrc'
 alias et='vim ~/.tmux.conf'
 alias ex='vim ~/.zshrc'
+tag () { vim -c "tag $1" }
