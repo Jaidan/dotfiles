@@ -7,3 +7,4 @@ userfiles/*
 ctags*
 .ropeproject
 .vim-django
+*.DS_Store
