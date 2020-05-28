@@ -15,10 +15,16 @@ Plug 'cakebaker/scss-syntax.vim'
 Plug 'neomake/neomake'
 Plug 'tpope/vim-commentary'
 Plug 'ekalinin/Dockerfile.vim'
-Plug 'roverdotcom/vim-python-test-runner', {'branch': 'docker'}
+Plug 'janko-m/vim-test'
+Plug 'tpope/vim-rhubarb'
+Plug 'tomlion/vim-solidity'
+Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
 call plug#end()
 
-let g:python_host_prog = expand('$HOME') . '/.pyenv/shims/python'
+let test#runners = {'Python': ['Rover']}
+let g:python_host_prog = expand('$HOME') . '/.pyenv/versions/neovim2/bin/python'
+let g:python3_host_prog = expand('$HOME') . '/.pyenv/versions/neovim3/bin/python'
+let test#python#runner = 'rover'
 
 set background=dark
 set ruler
@@ -116,7 +122,8 @@ augroup END
 
 nnoremap j gj
 nnoremap k gk
-autocmd! BufWritePost * Neomake
+autocmd VimEnter * if exists(":Neomake") | exe ":autocmd! BufWritePost,BufEnter * Neomake" | endif
+
 
 set tags=./ctags;$HOME;
 

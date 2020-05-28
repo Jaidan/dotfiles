@@ -1,8 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =6
-let g:netrw_dirhist_1='/Users/johnwilliams/rover/web/src/aplaceforrover/conversations/management'
-let g:netrw_dirhist_2='/Users/johnwilliams/rover/web/db-snapshot'
-let g:netrw_dirhist_3='/Users/johnwilliams/rover/tfalerts/alerts/datadog'
-let g:netrw_dirhist_4='/Users/johnwilliams/rover/web/src/aplaceforrover/imports/views'
-let g:netrw_dirhist_5='/Users/johnwilliams/rover/web/src/aplaceforrover/imports/urls'
-let g:netrw_dirhist_6='/Users/johnwilliams/.terminfo'
+let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_1='/Users/johnwilliams/projects/web/src/aplaceforrover/system_phones/management/commands'
+let g:netrw_dirhist_2='/Users/johnwilliams/projects/web/src'
+let g:netrw_dirhist_3='/Users/johnwilliams/projects/web/containers/nginx'
+let g:netrw_dirhist_4='/Users/johnwilliams/projects/web/containers'
+let g:netrw_dirhist_5='/Users/johnwilliams/projects/web/containers/nginx'
