@@ -33,8 +33,7 @@ ZSH_THEME="agnoster"
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
+# under VCS as dirty. This makes repository status check for large repositories much, much faster.
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Uncomment the following line if you want to change the command execution time
@@ -53,8 +52,7 @@ plugins=(git django docker python tmux virtualenv)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:~/bin:/usr/lib/jvm/java-6-openjdk/bin:$HOME/.rvm/bin:$HOME/.vim/bundle/fzf/bin"
-export PYTHONPATH=~/.vim/bundle/ropevim:$PYTHONPATH
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:~/bin:$HOME/Library/Python/2.7/bin:/usr/lib/jvm/java-6-openjdk/bin:$HOME/.rvm/bin:$HOME/.vim/bundle/fzf/bin"
 export FZF_DEFAULT_COMMAND='
   (git ls-files ||
          find . -path "*/\.*" -prune -o -type f -print -o -type l -print |
@@ -67,7 +65,7 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 export PATH="/usr/local/sbin:$PATH"
 
-source $HOME/rover/web/profile
+source $HOME/projects/web/profile
 
 eval "$(docker-machine env default)"
 
@@ -77,6 +75,8 @@ export USE_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 
 source $ZSH/oh-my-zsh.sh
+
+export ROVER_AWS_FEDERATION_ROLE="arn:aws:iam::401027316804:role/FederatedDeveloper"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -103,5 +103,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.aliases
+source ~/.rover-ro
+
+export DOCKER_BETA=osxfs
+export WEB_AS_PYTHON3=True
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
