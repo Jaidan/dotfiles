@@ -125,6 +125,3 @@ export WEB_AS_PYTHON3=True
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source $HOME/projects/web/profile
-
-eval "$(docker-machine env default)"
-
