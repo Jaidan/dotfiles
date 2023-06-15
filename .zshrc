@@ -72,6 +72,11 @@ plugins=(git django docker python tmux virtualenv)
 
 # User configuration
 
+PATH=$PATH:~/Library/Android/sdk/platform-tools
+    
+export ANDROID_HOME=~/Library/Android/sdk
+export JAVA_HOME=/Applications/Android\ Studio.app/Contents/jre/jdk/Contents/Home
+
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:~/bin:$HOME/Library/Python/2.7/bin:/usr/lib/jvm/java-6-openjdk/bin:$HOME/.rvm/bin:$HOME/.vim/bundle/fzf/bin"
 export FZF_DEFAULT_COMMAND='
   (git ls-files ||
@@ -125,3 +130,6 @@ export WEB_AS_PYTHON3=True
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source $HOME/projects/web/profile
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+export HOMEBREW_GITHUB_API_TOKEN="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"

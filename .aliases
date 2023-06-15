@@ -12,3 +12,4 @@ alias ev='vim ~/.vimrc'
 alias et='vim ~/.tmux.conf'
 alias ex='vim ~/.zshrc'
 tag () { vim -c "tag $1" }
+alias vimf='nvim $(fzf)'
