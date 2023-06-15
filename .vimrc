@@ -133,3 +133,4 @@ def remove_breakpoints():
             current_line_number -= 1
     vim.command('normal %dG' % current_line_number)
 vim.command('map <leader>B :py remove_breakpoints()<CR>')
+EOF
