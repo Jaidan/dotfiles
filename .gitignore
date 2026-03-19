@@ -9,3 +9,8 @@ ctags*
 .vim-django
 *.DS_Store
 config/hub
+
+# Private machine-specific overrides — never commit these
+.local
+.extra
+.path

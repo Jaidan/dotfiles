@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/johnwilliams/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -90,14 +90,12 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 export PATH="/usr/local/sbin:$PATH"
 
-DEFAULT_USER="johnwilliams"
+DEFAULT_USER="${USER}"
 export EDITOR="vim"
 export USE_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 
 source $ZSH/oh-my-zsh.sh
-
-export ROVER_AWS_FEDERATION_ROLE="arn:aws:iam::401027316804:role/FederatedDeveloper"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -123,13 +121,10 @@ export ROVER_AWS_FEDERATION_ROLE="arn:aws:iam::401027316804:role/FederatedDevelo
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.aliases
-source ~/.rover-ro
-
-export DOCKER_BETA=osxfs
-export WEB_AS_PYTHON3=True
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source $HOME/projects/web/profile
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-export HOMEBREW_GITHUB_API_TOKEN="REMOVED_TOKEN"
+
+# Machine-specific overrides (not tracked in git)
+[ -f ~/.local ] && source ~/.local
