@@ -1,0 +1,27 @@
+# Core
+brew "git"
+brew "stow"
+
+# Editor
+brew "neovim"
+
+# Shell & terminal
+brew "fzf"
+brew "tmux"
+
+# GitHub CLI (gh replaces the deprecated hub)
+brew "gh"
+brew "hub"
+
+# Code navigation
+brew "universal-ctags"
+
+# Python
+brew "pyenv"
+brew "pyenv-virtualenv"
+
+# Node
+brew "nvm"
+
+# Utilities
+brew "colordiff"
