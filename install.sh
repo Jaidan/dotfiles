@@ -134,8 +134,11 @@ setup_zsh() {
   zsh_path="$(command -v zsh)"
   if grep -qF "$zsh_path" /etc/shells 2>/dev/null; then
     info "Setting default shell to zsh..."
-    chsh -s "$zsh_path"
-    success "Default shell set to zsh"
+    if chsh -s "$zsh_path" 2>/dev/null; then
+      success "Default shell set to zsh"
+    else
+      warning "chsh failed (PAM/container?) — run manually: chsh -s $zsh_path"
+    fi
   else
     warning "zsh not in /etc/shells — run manually: chsh -s $zsh_path"
   fi

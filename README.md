@@ -41,6 +41,20 @@ Makefile
 install.sh
 ```
 
+## Testing the install
+
+A Docker Compose setup lets you verify `install.sh` works end-to-end in a clean Ubuntu container (requires [Docker Desktop](https://www.docker.com/products/docker-desktop/)).
+
+```sh
+# Run install.sh to completion — exit 0 means success
+docker compose -f docker-compose.test.yml run --rm install
+
+# Run install.sh then drop into the resulting zsh environment
+docker compose -f docker-compose.test.yml run --rm shell
+```
+
+The container starts from `ubuntu:24.04` with only `sudo` and `curl` pre-installed, so `install.sh` exercises the full Linux dependency path.
+
 ## Make targets
 
 ```sh

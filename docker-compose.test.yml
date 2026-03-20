@@ -1,0 +1,24 @@
+services:
+  # Runs install.sh to completion and exits.
+  # Exit code 0 = success, non-zero = something broke.
+  # Usage: docker compose -f docker-compose.test.yml run --rm install
+  install:
+    build:
+      context: .
+      dockerfile: test/Dockerfile
+    volumes:
+      - .:/home/dev/dotfiles:ro
+    command: bash install.sh
+
+  # Runs install.sh then drops to an interactive zsh shell for manual inspection.
+  # Falls back to bash if install.sh fails before zsh is installed.
+  # Usage: docker compose -f docker-compose.test.yml run --rm shell
+  shell:
+    build:
+      context: .
+      dockerfile: test/Dockerfile
+    volumes:
+      - .:/home/dev/dotfiles
+    command: bash -c "bash install.sh; exec zsh || exec bash"
+    stdin_open: true
+    tty: true
