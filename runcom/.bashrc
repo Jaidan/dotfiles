@@ -1,150 +1,65 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
-# If not running interactively, don't do anything
+# .bashrc — sourced for interactive bash shells (macOS + Linux)
 [ -z "$PS1" ] && return
-if [ -f ~/.git-prompt.sh ]; then
-    . ~/.git-prompt.sh
-fi
-if [ -f `brew --prefix`/etc/bash_completion ]; then
-    . `brew --prefix`/etc/bash_completion
-    . `brew --prefix`/etc/bash_completion.d/git-completion.bash
-else
-    . /etc/bash_completion.d/git
-    . /etc/bash_completion.d/django_bash_completion
-fi
-if [ -f `brew --prefix`/etc/bash_completion.d/git-completion.bash ]; then
-    . `brew --prefix`/etc/bash_completion.d/git-completion.bash
-fi
-if [ -f `brew --prefix`/etc/hub.bash_completion.sh ]; then
-    . `brew --prefix`/etc/bash_completion
-fi
-if [ -f /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-completion.bash ]; then
-    . /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-completion.bash
-fi
 
-if [ -f /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-prompt.sh ]; then
-    . /Applications/Xcode.app/Contents/Developer/usr/share/git-core/git-prompt.sh
-fi
-
-# don't put duplicate lines in the history. See bash(1) for more options
-# don't overwrite GNU Midnight Commander's setting of `ignorespace'.
-export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
-# ... or force ignoredups and ignorespace
+# ── History ───────────────────────────────────────────────────────────────────
 export HISTCONTROL=ignoreboth
-export JAVA_HOME=/usr/lib/jvm/java-6-sun
-
-# append to the history file, don't overwrite it
+export HISTSIZE=10000
+export HISTFILESIZE=20000
 shopt -s histappend
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
+# ── Completion ────────────────────────────────────────────────────────────────
+if command -v brew &>/dev/null; then
+  BREW_PREFIX="$(brew --prefix)"
+  [ -f "$BREW_PREFIX/etc/bash_completion" ] && source "$BREW_PREFIX/etc/bash_completion"
+elif [ -f /etc/bash_completion ]; then
+  source /etc/bash_completion
 fi
 
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color) color_prompt=yes;;
-esac
+# ── PATH ──────────────────────────────────────────────────────────────────────
+export PATH="$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
-
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
-    else
-	color_prompt=
-    fi
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv &>/dev/null; then
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
 fi
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
+# ── Editor ────────────────────────────────────────────────────────────────────
+export EDITOR="nvim"
+export VISUAL="$EDITOR"
 export CLICOLOR=1
 
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+# ── Prompt ────────────────────────────────────────────────────────────────────
+# Load git prompt support (brew on macOS, fallback to ~/.git-prompt.sh on Linux)
+if command -v brew &>/dev/null; then
+  GIT_PROMPT_SH="$(brew --prefix)/etc/bash_completion.d/git-prompt.sh"
+  [ -f "$GIT_PROMPT_SH" ] && source "$GIT_PROMPT_SH"
 fi
+[ -f ~/.git-prompt.sh ] && source ~/.git-prompt.sh
 
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    eval "`dircolors -b`"
-    alias ls='ls --color=always'
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-# some more ls aliases
-#alias ll='ls -l'
-#alias la='ls -A'
-#alias l='ls -CF'
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-fi
-
-export PATH=$PATH:$HOME/bin:/usr/lib/jvm/java-6-openjdk/bin:$HOME/.rvm/bin
-export PYTHONPATH=~/.vim/bundle/ropevim:$PYTHONPATH
-export EDITOR=vim
-
-function prompt {
-    local GREEN=$'\e[1;32m'
-    local MAGENTA=$'\e[1;35m'
-    local NORMAL=$'\e[m'
-    local PROMPT="\[$NORMAL\]\u@localhost:\[$GREEN\]\w \[$MAGENTA\]\$(__git_ps1)\[$NORMAL\]\$ "
-    PS1=$PROMPT
-    PS2='> '
-    PS4='+ '
+_set_prompt() {
+  local GREEN=$'\e[1;32m'
+  local MAGENTA=$'\e[1;35m'
+  local RESET=$'\e[m'
+  PS1="\[$RESET\]\u@\h:\[$GREEN\]\w\[$MAGENTA\]\$(__git_ps1 ' (%s)')\[$RESET\]\$ "
+  PS2='> '
 }
+_set_prompt
 
-prompt
+# ── Aliases ───────────────────────────────────────────────────────────────────
+[ -f ~/.aliases ] && source ~/.aliases
 
+# ── fzf ───────────────────────────────────────────────────────────────────────
+export FZF_DEFAULT_COMMAND='(git ls-files || find . -path "*/\.*" -prune -o -type f -print -o -type l -print) 2>/dev/null'
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export FZF_DEFAULT_COMMAND='
-  (git ls-files ||
-         find . -path "*/\.*" -prune -o -type f -print -o -type l -print |
-        sed s/^..//) 2> /dev/null'
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# ── NVM ───────────────────────────────────────────────────────────────────────
+export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ]          && source "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+
+# ── Machine-specific overrides (not tracked in git) ───────────────────────────
+[ -f ~/.local ] && source ~/.local

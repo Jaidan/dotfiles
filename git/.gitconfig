@@ -3,9 +3,10 @@
 	email = john@rover.com
 [core]
 	excludesfile = ~/.gitignore
-	editor = /usr/local/bin/nvim
+	editor = nvim
+	templatedir = ~/.git_template
 [alias]
-    co = checkout
+	co = checkout
 [color]
 	branch = auto
 	diff = auto
@@ -13,14 +14,11 @@
 	interactive = auto
 [push]
 	default = simple
-
-[difftool]
-    prompt = true
 [diff]
 	tool = nvimdiff
+[difftool]
+	prompt = false
 [difftool "nvimdiff"]
-    cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
-[difftool "vimdiff3"]
-	path = nvim
+	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 [merge]
 	tool = nvimdiff
