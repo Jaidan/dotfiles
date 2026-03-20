@@ -2,9 +2,9 @@
 .oh-my-zsh/
 
 # vim-plug installed plugins — auto-downloaded on first nvim launch
-.config/nvim/plugged/
-.config/nvim/autoload/
-.config/nvim/.netrwhist
+config/nvim/plugged/
+config/nvim/autoload/
+config/nvim/.netrwhist
 
 # Legacy vim vendored plugins — replaced by vim-plug
 .vim/bundle/
