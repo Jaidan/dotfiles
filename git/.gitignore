@@ -1,0 +1,16 @@
+*.pyc
+*.swp
+*.swo
+userfiles/*
+*.bck
+.ctrlp
+ctags*
+.ropeproject
+.vim-django
+*.DS_Store
+config/hub
+
+# Private machine-specific overrides — never commit these
+.local
+.extra
+.path

@@ -1,14 +1,16 @@
-*.pyc
-*.swp
-*.swo
-userfiles/*
-*.bck
-.ctrlp
-ctags*
-.ropeproject
-.vim-django
-*.DS_Store
-config/hub
+# oh-my-zsh — installed by install.sh, not tracked
+.oh-my-zsh/
+
+# vim-plug installed plugins — auto-downloaded on first nvim launch
+.config/nvim/plugged/
+.config/nvim/autoload/
+.config/nvim/.netrwhist
+
+# Legacy vim vendored plugins — replaced by vim-plug
+.vim/bundle/
+.vim/node_modules/
+.vim/.netrwhist
+.vim/autoload/pathogen.vim
 
 # Private machine-specific overrides — never commit these
 .local
