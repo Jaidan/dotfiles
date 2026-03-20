@@ -1,0 +1,22 @@
+{
+  // Used when opening this dotfiles repo itself in a Codespace.
+  // For the GitHub Codespaces dotfiles feature (applying these dotfiles to
+  // any new Codespace), GitHub automatically clones this repo and runs
+  // install.sh — no extra config needed there.
+  "name": "dotfiles",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  // Run the same bootstrap script used on any new machine
+  "postCreateCommand": "bash install.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscodevim.vim"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  }
+}

@@ -161,7 +161,8 @@ main() {
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
-      setup_zsh
+      # Skip chsh in Codespaces — default shell is set via devcontainer.json
+      [[ "${CODESPACES:-}" != "true" ]] && setup_zsh
       ;;
     *)
       error "Unsupported OS: $OS"
