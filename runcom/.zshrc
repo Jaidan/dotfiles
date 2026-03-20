@@ -1,7 +1,9 @@
 # oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="agnoster"
-plugins=(git django docker python tmux virtualenv)
+# Build plugins list — only include tmux if it is installed
+plugins=(git docker python virtualenv)
+command -v tmux &>/dev/null && plugins+=(tmux)
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
 export PATH="$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"

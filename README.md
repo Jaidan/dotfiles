@@ -16,6 +16,14 @@ cd ~/dotfiles
 
 Existing dotfiles that would conflict are automatically backed up to `~/.dotfiles-backup-<date>` before stowing.
 
+## Terminal font
+
+The zsh theme (agnoster) uses Powerline symbols. `brew bundle` installs **MesloLGS Nerd Font** automatically, but you still need to tell your terminal to use it:
+
+- **iTerm2** — Preferences → Profiles → Text → Font → pick `MesloLGS NF`
+- **Terminal.app** — Settings → Profiles → Font → pick `MesloLGS NF`
+- **VS Code terminal** — add to `settings.json`: `"terminal.integrated.fontFamily": "MesloLGS NF"`
+
 ## Codespaces
 
 The [GitHub Codespaces dotfiles feature](https://docs.github.com/en/codespaces/setting-your-user-preferences/personalizing-github-codespaces-for-your-account#dotfiles) will automatically clone this repo and run `install.sh` in every new Codespace.
