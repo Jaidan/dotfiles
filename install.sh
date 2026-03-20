@@ -136,8 +136,10 @@ setup_zsh() {
     info "Setting default shell to zsh..."
     if chsh -s "$zsh_path" 2>/dev/null; then
       success "Default shell set to zsh"
+    elif sudo chsh -s "$zsh_path" "$USER" 2>/dev/null; then
+      success "Default shell set to zsh (via sudo)"
     else
-      warning "chsh failed (PAM/container?) — run manually: chsh -s $zsh_path"
+      warning "chsh failed — run manually: chsh -s $zsh_path"
     fi
   else
     warning "zsh not in /etc/shells — run manually: chsh -s $zsh_path"
@@ -164,8 +166,7 @@ main() {
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
-      # Skip chsh in Codespaces — default shell is set via devcontainer.json
-      [[ "${CODESPACES:-}" != "true" ]] && setup_zsh
+      setup_zsh
       ;;
     *)
       error "Unsupported OS: $OS"
