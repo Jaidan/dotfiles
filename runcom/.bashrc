@@ -17,7 +17,7 @@ elif [ -f /etc/bash_completion ]; then
 fi
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
-export PATH="$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"

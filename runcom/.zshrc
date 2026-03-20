@@ -6,7 +6,7 @@ plugins=(git docker python virtualenv)
 command -v tmux &>/dev/null && plugins+=(tmux)
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
-export PATH="$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
