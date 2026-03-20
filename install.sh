@@ -47,7 +47,9 @@ install_apt_deps() {
     tmux \
     fzf \
     curl \
-    build-essential
+    build-essential \
+    python3-pip \
+    python3-venv
   success "apt packages installed"
 }
 
@@ -123,6 +125,50 @@ link_dotfiles() {
   success "Dotfiles linked"
 }
 
+# ── Neovim setup ─────────────────────────────────────────────────────────
+
+setup_neovim() {
+  # Install vim-plug
+  local plug_path="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"
+  if [[ -f "$plug_path" ]]; then
+    info "vim-plug already installed — skipping"
+  else
+    info "Installing vim-plug..."
+    curl -fLo "$plug_path" --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    success "vim-plug installed"
+  fi
+
+  # Set up Python provider for Neovim
+  local neovim3_dir="$HOME/.pyenv/versions/neovim3"
+  if [[ -x "$neovim3_dir/bin/python" ]]; then
+    info "Neovim Python provider already set up — skipping"
+  elif command -v pyenv &>/dev/null; then
+    info "Setting up Neovim Python provider via pyenv..."
+    local py_version
+    py_version="$(pyenv latest 3 2>/dev/null || pyenv versions --bare | grep -E '^3\.' | tail -1)"
+    if [[ -n "$py_version" ]]; then
+      pyenv virtualenv "$py_version" neovim3 2>/dev/null || true
+      "$neovim3_dir/bin/pip" install --upgrade pynvim
+      success "Neovim Python provider installed (pyenv)"
+    else
+      warning "No Python 3 version found in pyenv — install one with: pyenv install 3.x.x"
+    fi
+  else
+    info "Setting up Neovim Python provider via venv..."
+    python3 -m venv "$neovim3_dir"
+    "$neovim3_dir/bin/pip" install --upgrade pip pynvim
+    success "Neovim Python provider installed (venv)"
+  fi
+
+  # Install plugins
+  if command -v nvim &>/dev/null; then
+    info "Installing Neovim plugins..."
+    nvim --headless +PlugInstall +qall 2>/dev/null || true
+    success "Neovim plugins installed"
+  fi
+}
+
 # ── Default shell ─────────────────────────────────────────────────────────────
 
 setup_zsh() {
@@ -160,12 +206,14 @@ main() {
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
+      setup_neovim
       ;;
     Linux)
       install_apt_deps
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
+      setup_neovim
       setup_zsh
       ;;
     *)

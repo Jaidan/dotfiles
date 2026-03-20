@@ -28,7 +28,6 @@ Plug 'peitalin/vim-jsx-typescript'
 call plug#end()
 
 let test#runners = {'Python': ['Rover']}
-let g:python_host_prog = expand('$HOME') . '/.pyenv/versions/neovim2/bin/python'
 let g:python3_host_prog = expand('$HOME') . '/.pyenv/versions/neovim3/bin/python'
 let test#python#runner = 'rover'
 
@@ -133,7 +132,7 @@ autocmd VimEnter * if exists(":Neomake") | exe ":autocmd! BufWritePost,BufEnter 
 
 set tags=./ctags;$HOME;
 
-python << EOF
+python3 << EOF
 import vim
 def set_breakpoint():
     import re
@@ -148,7 +147,7 @@ def set_breakpoint():
         },
         line_number - 1
     )
-vim.command('map <leader>b :py set_breakpoint()<CR>')
+vim.command('map <leader>b :py3 set_breakpoint()<CR>')
 
 def remove_breakpoints():
     import re
@@ -163,4 +162,4 @@ def remove_breakpoints():
         if delete_target < current_line_number:
             current_line_number -= 1
     vim.command('normal %dG' % current_line_number)
-vim.command('map <leader>B :py remove_breakpoints()<CR>')
+vim.command('map <leader>B :py3 remove_breakpoints()<CR>')
