@@ -13,6 +13,6 @@
 .vim/autoload/pathogen.vim
 
 # Private machine-specific overrides — never commit these
-.local
+.locals
 .extra
 .path

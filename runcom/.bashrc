@@ -62,4 +62,4 @@ export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
-[ -f ~/.local ] && source ~/.local
+[ -f ~/.locals ] && source ~/.locals

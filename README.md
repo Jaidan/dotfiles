@@ -76,10 +76,10 @@ make update    # git pull + re-link
 
 ## Machine-specific config
 
-Anything that shouldn't be committed — tokens, work-specific env vars, machine-local paths — goes in `~/.local`. It's sourced at the end of both `.zshrc` and `.bashrc`, and is gitignored.
+Anything that shouldn't be committed — tokens, work-specific env vars, machine-local paths — goes in `~/.locals`. It's sourced at the end of both `.zshrc` and `.bashrc`, and is gitignored.
 
 ```sh
-# ~/.local — not tracked in git
+# ~/.locals — not tracked in git
 export HOMEBREW_GITHUB_API_TOKEN="..."
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home"
