@@ -55,10 +55,6 @@ let g:airline_symbols.linenr = ''
 
 let g:airline#extensions#tabline#left_sep = ''
 let g:airline#extensions#tabline#left_alt_sep = ''
-let ropevim_vim_completion = 1
-let ropevim_extended_complete = 1
-let ropevim_guess_project = 1
-imap <c-space> <C-R>=RopeCodeAssistInsertMode()<CR>
 set wildignore+=*.pyc
 
 autocmd FileType c,cpp,slang setlocal cindent
@@ -67,13 +63,10 @@ autocmd FileType perl setlocal smartindent
 autocmd FileType make setlocal noet
 autocmd FileType setlocal ominfunc=htmlcomplete#CompleteTags
 autocmd FileType setlocal ominfunc=xmlcomplete#Comple
-let g:ropevim_autoimport_modules = ["os.*","traceback","django.*","datetime","sys","urllib","urllib2"]
 autocmd FileType php noremap <C-M> :w!<CR>:!php %<CR>
 autocmd FileType php noremap <leader>L :!php -l %<CR>
-autocmd FileType python setlocal omnifunc=RopeCompleteFunc
 nnoremap <leader>l :TagbarToggle<CR>
 nnoremap <leader>u :GundoToggle<CR>
-nnoremap <leader>i :RopeAutoImport<CR>
 nnoremap <leader>o :RopeOrganizeImports<CR>
 nnoremap <leader>t :NERDTreeToggle<CR>
 nnoremap <leader>c :cclose \| lclose<CR>
