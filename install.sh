@@ -45,7 +45,6 @@ install_apt_deps() {
     zsh \
     neovim \
     tmux \
-    fzf \
     curl \
     build-essential \
     python3-pip \
@@ -71,16 +70,26 @@ install_oh_my_zsh() {
 # ── fzf shell integration ─────────────────────────────────────────────────────
 
 setup_fzf() {
-  local fzf_install=""
   if command -v brew &>/dev/null; then
+    # macOS: fzf installed via Brewfile, just wire up shell integration
+    local fzf_install
     fzf_install="$(brew --prefix fzf 2>/dev/null)/install" || true
-  fi
-  [[ -z "$fzf_install" ]] && fzf_install="$HOME/.fzf/install"
-
-  if [[ -x "$fzf_install" ]]; then
-    info "Setting up fzf shell integration..."
-    "$fzf_install" --all --no-update-rc
-    success "fzf shell integration installed"
+    if [[ -x "$fzf_install" ]]; then
+      info "Setting up fzf shell integration..."
+      "$fzf_install" --all --no-update-rc
+      success "fzf shell integration installed"
+    fi
+  else
+    # Linux: install fzf from git to get a current version
+    if [[ -d "$HOME/.fzf" ]]; then
+      info "Updating fzf..."
+      git -C "$HOME/.fzf" pull --quiet
+    else
+      info "Installing fzf from git..."
+      git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    fi
+    "$HOME/.fzf/install" --all --no-update-rc
+    success "fzf installed ($(~/.fzf/bin/fzf --version))"
   fi
 }
 
