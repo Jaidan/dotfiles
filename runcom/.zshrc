@@ -36,5 +36,8 @@ export FZF_DEFAULT_COMMAND='(git ls-files || find . -path "*/\.*" -prune -o -typ
 export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 
+# ── direnv ────────────────────────────────────────────────────────────────────
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
 [ -f ~/.locals ] && source ~/.locals

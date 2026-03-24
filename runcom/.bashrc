@@ -61,5 +61,8 @@ export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ]          && source "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 
+# ── direnv ────────────────────────────────────────────────────────────────────
+command -v direnv &>/dev/null && eval "$(direnv hook bash)"
+
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
 [ -f ~/.locals ] && source ~/.locals
