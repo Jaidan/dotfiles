@@ -208,9 +208,9 @@ setup_zsh() {
   zsh_path="$(command -v zsh)"
   if grep -qF "$zsh_path" /etc/shells 2>/dev/null; then
     info "Setting default shell to zsh..."
-    if chsh -s "$zsh_path" 2>/dev/null; then
+    if timeout 5 chsh -s "$zsh_path" 2>/dev/null; then
       success "Default shell set to zsh"
-    elif sudo chsh -s "$zsh_path" "$USER" 2>/dev/null; then
+    elif timeout 5 sudo chsh -s "$zsh_path" "$USER" 2>/dev/null; then
       success "Default shell set to zsh (via sudo)"
     else
       warning "chsh failed — run manually: chsh -s $zsh_path"
