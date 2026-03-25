@@ -6,7 +6,8 @@ plugins=(git docker python virtualenv)
 command -v tmux &>/dev/null && plugins+=(tmux)
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
-export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# Prepend personal dirs; preserve whatever the system/Codespace already set
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -33,7 +34,11 @@ export FZF_DEFAULT_COMMAND='(git ls-files || find . -path "*/\.*" -prune -o -typ
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # ── NVM ───────────────────────────────────────────────────────────────────────
+# ~/.nvm on macOS/standard Linux; /usr/local/share/nvm in Codespaces
 export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
+if [[ ! -s "$NVM_DIR/nvm.sh" && -s "/usr/local/share/nvm/nvm.sh" ]]; then
+  NVM_DIR="/usr/local/share/nvm"
+fi
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 
 # ── direnv ────────────────────────────────────────────────────────────────────
