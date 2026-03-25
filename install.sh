@@ -188,12 +188,12 @@ setup_neovim() {
 # ── Git config overrides ──────────────────────────────────────────────────────
 
 fix_git_editor() {
-  # Codespaces injects `core.editor = code --wait` into the global git config,
-  # which fails in a terminal-only session.  Force it back to nvim.
-  if git config --global core.editor | grep -q 'code'; then
-    info "Overriding Codespace git editor (code --wait) → nvim..."
-    git config --global core.editor nvim
-    success "git core.editor set to nvim"
+  # stow overwrites ~/.gitconfig with our dotfiles version (editor = nvim).
+  # In Codespaces, restore `code --wait` so VS Code's built-in terminal works.
+  if [[ "${CODESPACES:-}" == "true" ]]; then
+    info "Codespace detected — setting git editor to 'code --wait'..."
+    git config --global core.editor "code --wait"
+    success "git core.editor set to 'code --wait'"
   fi
 }
 
