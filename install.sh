@@ -38,6 +38,13 @@ install_brew_bundle() {
 
 install_apt_deps() {
   info "Installing apt dependencies..."
+  # The Codespace base image ships a yarn apt source whose GPG key is frequently
+  # missing or expired.  We don't install yarn via apt, so just remove it before
+  # updating to avoid the "NO_PUBKEY" error that aborts the update.
+  if sudo rm -f /etc/apt/sources.list.d/yarn.list \
+                /usr/share/keyrings/yarnkey.gpg 2>/dev/null; then
+    info "Removed stale yarn apt source (if present)"
+  fi
   sudo apt-get update -qq
   sudo apt-get install -y -qq \
     git \
