@@ -185,6 +185,18 @@ setup_neovim() {
   fi
 }
 
+# ── Git config overrides ──────────────────────────────────────────────────────
+
+fix_git_editor() {
+  # Codespaces injects `core.editor = code --wait` into the global git config,
+  # which fails in a terminal-only session.  Force it back to nvim.
+  if git config --global core.editor | grep -q 'code'; then
+    info "Overriding Codespace git editor (code --wait) → nvim..."
+    git config --global core.editor nvim
+    success "git core.editor set to nvim"
+  fi
+}
+
 # ── Default shell ─────────────────────────────────────────────────────────────
 
 setup_zsh() {
@@ -231,6 +243,7 @@ main() {
       link_dotfiles
       setup_neovim
       setup_zsh
+      fix_git_editor
       ;;
     *)
       error "Unsupported OS: $OS"
