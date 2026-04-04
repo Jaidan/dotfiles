@@ -64,5 +64,12 @@ export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
 # ── direnv ────────────────────────────────────────────────────────────────────
 command -v direnv &>/dev/null && eval "$(direnv hook bash)"
 
+# ── Project-local profile (Codespaces only) ───────────────────────────────────
+if [[ -n "$CODESPACE_NAME" ]]; then
+  _source_local_profile() { [[ -f "$PWD/profile" ]] && source "$PWD/profile"; }
+  _source_local_profile
+  cd() { builtin cd "$@" && _source_local_profile; }
+fi
+
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
 [ -f ~/.locals ] && source ~/.locals

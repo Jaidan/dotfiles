@@ -44,5 +44,15 @@ fi
 # ── direnv ────────────────────────────────────────────────────────────────────
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
+# ── Project-local profile (Codespaces only) ───────────────────────────────────
+# Rover (and similar projects) ship a ./profile that must be sourced.
+# Restrict to Codespaces so arbitrary profile files are never auto-loaded locally.
+if [[ -n "$CODESPACE_NAME" ]]; then
+  _source_local_profile() { [[ -f "$PWD/profile" ]] && source "$PWD/profile"; }
+  autoload -U add-zsh-hook
+  add-zsh-hook chpwd _source_local_profile
+  _source_local_profile
+fi
+
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
 [ -f ~/.locals ] && source ~/.locals
