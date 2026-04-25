@@ -31,7 +31,7 @@ source "$ZSH/oh-my-zsh.sh"
 
 # ── fzf ───────────────────────────────────────────────────────────────────────
 export FZF_DEFAULT_COMMAND='(git ls-files || find . -path "*/\.*" -prune -o -type f -print -o -type l -print) 2>/dev/null'
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[[ -t 0 && -t 1 ]] && [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # ── NVM ───────────────────────────────────────────────────────────────────────
 # ~/.nvm on macOS/standard Linux; /usr/local/share/nvm in Codespaces

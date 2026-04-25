@@ -54,7 +54,7 @@ _set_prompt
 
 # ── fzf ───────────────────────────────────────────────────────────────────────
 export FZF_DEFAULT_COMMAND='(git ls-files || find . -path "*/\.*" -prune -o -type f -print -o -type l -print) 2>/dev/null'
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+[ -t 0 ] && [ -t 1 ] && [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # ── NVM ───────────────────────────────────────────────────────────────────────
 export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
