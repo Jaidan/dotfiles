@@ -22,3 +22,5 @@
 	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 [merge]
 	tool = nvimdiff
+[credential]
+	helper = "!f() { /home/codespace/.vscode-server/bin/10c8e557c8b9f9ed0a87f61f1c9a44bde731c409/node /tmp/vscode-remote-containers-92e06f94-786b-48d0-9565-0e045c9e77af.js git-credential-helper $*; }; f"
