@@ -54,5 +54,25 @@ if [[ -n "$CODESPACE_NAME" ]]; then
   _source_local_profile
 fi
 
+# Added by flyctl installer
+export FLYCTL_INSTALL="/home/codespace/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+# ── mealplanner: auto-prune merged worktrees (rate-limited, backgrounded) ────
+_mealplanner_prune_worktrees() {
+  local repo="/workspaces/mealplanner"
+  local stamp="$HOME/.cache/mealplanner-prune.stamp"
+  [ -x "$repo/scripts/prune-merged-worktrees.sh" ] || return 0
+  mkdir -p "$(dirname "$stamp")"
+  local now last=0
+  now=$(date +%s)
+  [ -f "$stamp" ] && last=$(cat "$stamp" 2>/dev/null || echo 0)
+  (( now - last < 1800 )) && return 0
+  echo "$now" > "$stamp"
+  ( "$repo/scripts/prune-merged-worktrees.sh" "$repo" >/dev/null 2>&1 &! ) 2>/dev/null
+}
+autoload -U add-zsh-hook
+add-zsh-hook precmd _mealplanner_prune_worktrees
+
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
 [ -f ~/.locals ] && source ~/.locals
