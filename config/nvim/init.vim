@@ -38,7 +38,7 @@ let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_no_extensions_in_markdown = 1
 let g:vim_markdown_autowrite = 1
-autocmd FileType markdown setlocal conceallevel=2 wrap linebreak nolist textwidth=0 wrapmargin=0
+autocmd FileType markdown setlocal conceallevel=2 wrap linebreak nolist textwidth=0 wrapmargin=0 colorcolumn=
 
 let test#runners = {'Python': ['Rover']}
 let g:python3_host_prog = expand('$HOME') . '/.pyenv/versions/neovim3/bin/python'
@@ -128,7 +128,7 @@ nnoremap <C-l> <C-w>l
 
 augroup vimrc_autocmds
   autocmd BufEnter * highlight OverLength ctermbg=darkred guibg=#111111
-  autocmd BufEnter * match OverLength /\%81v.*/
+  autocmd BufEnter * if &filetype !=# 'markdown' | match OverLength /\%81v.*/ | else | match none | endif
 augroup END
 
 nnoremap j gj
