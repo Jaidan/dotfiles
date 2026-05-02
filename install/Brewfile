@@ -25,6 +25,7 @@ brew "nvm"
 
 # Utilities
 brew "colordiff"
+brew "glow"   # terminal markdown reader
 
 # Fonts — required for agnoster theme powerline arrows
 # After install: set "MesloLGS NF" (or any MesloLGS Nerd Font) in your terminal emulator

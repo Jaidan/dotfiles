@@ -197,6 +197,24 @@ fix_git_editor() {
   fi
 }
 
+# ── glow (terminal markdown reader) ──────────────────────────────────────────
+
+install_glow_apt() {
+  if command -v glow &>/dev/null; then
+    info "glow already installed — skipping"
+    return
+  fi
+  info "Installing glow (Charm apt repo)..."
+  sudo mkdir -p /etc/apt/keyrings
+  curl -fsSL https://repo.charm.sh/apt/gpg.key \
+    | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" \
+    | sudo tee /etc/apt/sources.list.d/charm.list >/dev/null
+  sudo apt-get update -qq
+  sudo apt-get install -y -qq glow
+  success "glow installed ($(glow --version 2>/dev/null | head -1))"
+}
+
 # ── Default shell ─────────────────────────────────────────────────────────────
 
 setup_zsh() {
@@ -238,6 +256,7 @@ main() {
       ;;
     Linux)
       install_apt_deps
+      install_glow_apt
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
