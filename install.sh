@@ -207,7 +207,7 @@ install_glow_apt() {
   info "Installing glow (Charm apt repo)..."
   sudo mkdir -p /etc/apt/keyrings
   curl -fsSL https://repo.charm.sh/apt/gpg.key \
-    | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+    | sudo gpg --batch --no-tty --yes --dearmor -o /etc/apt/keyrings/charm.gpg
   echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" \
     | sudo tee /etc/apt/sources.list.d/charm.list >/dev/null
   sudo apt-get update -qq
@@ -256,7 +256,7 @@ main() {
       ;;
     Linux)
       install_apt_deps
-      install_glow_apt
+      install_glow_apt || warning "glow install failed — continuing with remaining bootstrap"
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
