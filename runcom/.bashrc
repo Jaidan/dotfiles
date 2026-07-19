@@ -71,22 +71,27 @@ if [[ -n "$CODESPACE_NAME" ]]; then
   cd() { builtin cd "$@" && _source_local_profile; }
 fi
 
-# ── mealplanner: auto-prune merged worktrees (rate-limited, backgrounded) ────
-_mealplanner_prune_worktrees() {
-  local repo="/workspaces/mealplanner"
-  local stamp="$HOME/.cache/mealplanner-prune.stamp"
-  [ -x "$repo/scripts/prune-merged-worktrees.sh" ] || return 0
+# ── auto-prune merged worktrees (rate-limited, backgrounded) ─────────────────
+# Runs <repo>/scripts/prune-merged-worktrees.sh for whichever repo the shell is
+# currently in, at most once every 30 minutes per repo. Repos that don't ship
+# that script return early, so this is inert everywhere else.
+prune_worktrees() {
+  local repo
+  repo=$(git rev-parse --show-toplevel 2>/dev/null) || return 0
+  local script="$repo/scripts/prune-merged-worktrees.sh"
+  [ -x "$script" ] || return 0
+  local stamp="$HOME/.cache/prune-worktrees/${repo//\//_}.stamp"
   mkdir -p "$(dirname "$stamp")"
   local now last=0
   now=$(date +%s)
   [ -f "$stamp" ] && last=$(cat "$stamp" 2>/dev/null || echo 0)
   (( now - last < 1800 )) && return 0
   echo "$now" > "$stamp"
-  ( "$repo/scripts/prune-merged-worktrees.sh" "$repo" >/dev/null 2>&1 & disown ) 2>/dev/null
+  ( "$script" "$repo" >/dev/null 2>&1 & disown ) 2>/dev/null
 }
 case "${PROMPT_COMMAND:-}" in
-  *_mealplanner_prune_worktrees*) ;;
-  *) PROMPT_COMMAND="_mealplanner_prune_worktrees;${PROMPT_COMMAND:-}" ;;
+  *prune_worktrees*) ;;
+  *) PROMPT_COMMAND="prune_worktrees;${PROMPT_COMMAND:-}" ;;
 esac
 
 # ── dotfiles: auto-update from git on new shells (throttled, backgrounded) ────
