@@ -85,9 +85,10 @@ sessions), so only two things are managed:
 - **Statusline script** (`statusline.sh`) is symlinked into `~/.claude/` via
   stow. It shows model, git branch, effort, and worktree on line one; context
   window and rate limits on line two. Branch names matching `<PREFIX>-<number>`
-  become clickable Linear issue links. Configure this per project, in that
-  project's `.claude/settings.local.json` (gitignored, so the org name is never
-  committed):
+  become clickable Linear issue links. Which org and prefix vary per project,
+  so they're configured in that project's `.claude/settings.json` (commit it to
+  share the config with the repo) or `.claude/settings.local.json` (keep it to
+  yourself):
 
   ```json
   {
