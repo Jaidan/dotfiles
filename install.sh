@@ -52,6 +52,7 @@ install_apt_deps() {
     zsh \
     neovim \
     tmux \
+    jq \
     curl \
     build-essential \
     python3-pip \
@@ -139,6 +140,58 @@ link_dotfiles() {
   stow --restow --dir="$DOTFILES_DIR" --target="$HOME"         "${home_packages[@]}"
   stow --restow --dir="$DOTFILES_DIR" --target="$HOME/.config" "$config_package"
   success "Dotfiles linked"
+}
+
+# ── Claude Code config ───────────────────────────────────────────────────────
+#
+# ~/.claude is a live runtime directory (credentials, history, sessions). We
+# only want to track the static statusline scripts and a portable base of
+# settings — never the whole directory. Stow folds at the file level here:
+# because ~/.claude already exists as a real dir, stow descends and symlinks
+# just the individual files from the `claude` package.
+
+# Merge the tracked portable settings over the live settings.json. The live
+# file stays a real file that Claude Code owns and rewrites at runtime; this
+# only overlays the keys the base defines (statusLine, editorMode, …), leaving
+# machine- and work-specific keys (model, enabledPlugins, …) untouched.
+# Idempotent — safe to re-run.
+merge_claude_settings() {
+  local base="$DOTFILES_DIR/install/claude-settings.base.json"
+  local live="$HOME/.claude/settings.json"
+
+  if ! command -v jq &>/dev/null; then
+    warning "jq not found — skipping Claude settings merge"
+    return 0
+  fi
+
+  mkdir -p "$HOME/.claude"
+  local tmp
+  tmp="$(mktemp)"
+  jq -s '.[0] * .[1]' <(cat "$live" 2>/dev/null || echo '{}') "$base" > "$tmp"
+  mv "$tmp" "$live"
+  success "Merged Claude base settings into ~/.claude/settings.json"
+}
+
+link_claude() {
+  info "Linking Claude config with stow..."
+  local backup_dir="${1:-$HOME/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)}"
+
+  # Back up only the specific real files we track (not the whole ~/.claude).
+  # statusline-forkless.sh is the pre-rename name; still listed so upgrading
+  # machines move it aside instead of blocking the restow.
+  local f
+  for f in statusline.sh statusline-forkless.sh; do
+    local target="$HOME/.claude/$f"
+    if [[ -e "$target" && ! -L "$target" ]]; then
+      mkdir -p "$backup_dir/.claude"
+      mv "$target" "$backup_dir/.claude/"
+      warning "  Backed up existing: ~/.claude/$f"
+    fi
+  done
+
+  mkdir -p "$HOME/.claude"
+  stow --restow --dir="$DOTFILES_DIR" --target="$HOME" claude
+  merge_claude_settings
 }
 
 # ── Neovim setup ─────────────────────────────────────────────────────────
@@ -252,6 +305,7 @@ main() {
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
+      link_claude
       setup_neovim
       ;;
     Linux)
@@ -260,6 +314,7 @@ main() {
       install_oh_my_zsh
       setup_fzf
       link_dotfiles
+      link_claude
       setup_neovim
       setup_zsh
       fix_git_editor

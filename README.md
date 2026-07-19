@@ -36,6 +36,7 @@ Each top-level directory is a [GNU Stow](https://www.gnu.org/software/stow/) pac
 
 ```
 .devcontainer/       Codespaces container config
+claude/              → ~/.claude/  (statusline scripts; settings merged, not linked)
 config/              → ~/.config/  (nvim)
 git/                 → ~/          (.gitconfig, .gitignore, .git_template/)
 install/             Brewfile
@@ -71,8 +72,49 @@ make link      # Stow all packages into $HOME
 make unlink    # Remove all stow symlinks
 make brew      # Install/update Homebrew packages
 make macos     # Apply macOS system preferences
+make claude    # Link Claude statusline + merge base settings
 make update    # git pull + re-link
 ```
+
+## Claude Code config
+
+The `claude/` package tracks the Claude Code status line and a portable base of
+settings. `~/.claude/` is a live runtime directory (credentials, history,
+sessions), so only two things are managed:
+
+- **Statusline script** (`statusline.sh`) is symlinked into `~/.claude/` via
+  stow. It shows model, git branch, effort, and worktree on line one; context
+  window and rate limits on line two. Branch names matching `<PREFIX>-<number>`
+  become clickable Linear issue links. Configure this per project, in that
+  project's `.claude/settings.local.json` (gitignored, so the org name is never
+  committed):
+
+  ```json
+  {
+    "env": {
+      "CLAUDE_STATUSLINE_LINEAR_ORG": "acme",
+      "CLAUDE_STATUSLINE_TICKET_PREFIX": "ACME"
+    }
+  }
+  ```
+
+  Both are optional and unset globally. Projects that don't define them render
+  branches as plain text — nothing to configure for the statusline to work.
+
+- **Base settings** live in `install/claude-settings.base.json` and are *merged*
+  over the live `~/.claude/settings.json` with `jq` (via `make claude` or the
+  installer). Only portable keys are set (status line, theme, editor mode, …);
+  machine- and work-specific keys (`model`, `enabledPlugins`, …) are left
+  untouched. Settings are merged rather than symlinked because Claude Code
+  rewrites `settings.json` at runtime.
+
+## Auto-update on new shells
+
+Both `.zshrc` and `.bashrc` run a throttled, backgrounded `git pull --ff-only`
+of `~/dotfiles` once per day, but only when the working tree is clean. If new
+commits arrive, a short notice prints in the next shell. Symlinked files update
+immediately; run `make link` only if new files were added. Set
+`DOTFILES_NO_AUTOUPDATE=1` (e.g. in `~/.locals`) to disable it.
 
 ## Machine-specific config
 

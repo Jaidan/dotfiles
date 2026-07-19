@@ -17,7 +17,7 @@ elif [ -f /etc/bash_completion ]; then
 fi
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
-export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/snap/bin"
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -89,9 +89,51 @@ case "${PROMPT_COMMAND:-}" in
   *) PROMPT_COMMAND="_mealplanner_prune_worktrees;${PROMPT_COMMAND:-}" ;;
 esac
 
+# ── dotfiles: auto-update from git on new shells (throttled, backgrounded) ────
+# Set DOTFILES_NO_AUTOUPDATE=1 (e.g. in ~/.locals) to disable. Override the repo
+# location with DOTFILES_DIR if you cloned somewhere other than ~/dotfiles.
+_dotfiles_pull() {
+  # Fast-forward pull, only when the tree is clean; leave a notice if HEAD moved.
+  local repo="$1" notice="$2"
+  [ -n "$(git -C "$repo" status --porcelain 2>/dev/null)" ] && return 0
+  local before after
+  before=$(git -C "$repo" rev-parse HEAD 2>/dev/null) || return 0
+  git -C "$repo" pull --ff-only --quiet 2>/dev/null || return 0
+  after=$(git -C "$repo" rev-parse HEAD 2>/dev/null)
+  [ "$before" = "$after" ] && return 0
+  local n
+  n=$(git -C "$repo" rev-list --count "$before..$after" 2>/dev/null)
+  printf 'dotfiles: pulled %s new commit(s). Symlinked files are already live; run `make link` if new files were added.\n' "$n" > "$notice"
+}
+_dotfiles_autoupdate() {
+  [ -n "${DOTFILES_NO_AUTOUPDATE:-}" ] && return 0
+  local repo="${DOTFILES_DIR:-$HOME/dotfiles}"
+  local notice="$HOME/.cache/dotfiles-update.notice"
+  # Phase 1: surface the result of any prior background pull.
+  if [ -s "$notice" ]; then
+    cat "$notice"
+    rm -f "$notice"
+  fi
+  [ -d "$repo/.git" ] || return 0
+  # Phase 2: kick off a background pull at most once per day.
+  local stamp="$HOME/.cache/dotfiles-update.stamp"
+  mkdir -p "$(dirname "$stamp")"
+  local now last=0
+  now=$(date +%s)
+  [ -f "$stamp" ] && last=$(cat "$stamp" 2>/dev/null || echo 0)
+  (( now - last < 86400 )) && return 0
+  echo "$now" > "$stamp"  # stamp first so an offline shell won't retry every prompt
+  ( _dotfiles_pull "$repo" "$notice" >/dev/null 2>&1 & disown ) 2>/dev/null
+}
+case "${PROMPT_COMMAND:-}" in
+  *_dotfiles_autoupdate*) ;;
+  *) PROMPT_COMMAND="_dotfiles_autoupdate;${PROMPT_COMMAND:-}" ;;
+esac
+
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
 [ -f ~/.locals ] && source ~/.locals
 
 # Added by flyctl installer
 export FLYCTL_INSTALL="/home/codespace/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
+export PATH="$HOME/flutter/bin:$PATH"
