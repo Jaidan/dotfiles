@@ -1,0 +1,9 @@
+{
+  "model": {"id": "claude-opus-4-7[1m]", "display_name": "Opus"},
+  "context_window": {"used_percentage": 25},
+  "effort": {"level": "medium"},
+  "worktree": {"name": "ui-polish", "path": "/tmp/wt/ui-polish", "branch": "FOR-200"},
+  "rate_limits": {
+    "five_hour": {"used_percentage": 30, "resets_at": 9999999999}
+  }
+}

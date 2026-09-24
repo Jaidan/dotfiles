@@ -8,6 +8,26 @@
   "permissions": {
     "defaultMode": "auto"
   },
+  "extraKnownMarketplaces": {
+    "42nddesign": {
+      "source": { "source": "git", "url": "https://github.com/42ndDesign/claude-plugins.git" }
+    },
+    "claude-plugins-official": {
+      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+    },
+    "rover-plugins": {
+      "source": { "source": "github", "repo": "roverdotcom/rover-claude-plugins" }
+    },
+    "superpowers-extended-cc-marketplace": {
+      "source": { "source": "github", "repo": "pcvelz/superpowers" }
+    },
+    "expo-plugins": {
+      "source": { "source": "github", "repo": "expo/skills" }
+    },
+    "context-mode": {
+      "source": { "source": "github", "repo": "mksglu/context-mode" }
+    }
+  },
   "editorMode": "vim",
   "theme": "dark",
   "tui": "fullscreen",

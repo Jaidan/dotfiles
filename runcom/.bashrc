@@ -135,6 +135,13 @@ case "${PROMPT_COMMAND:-}" in
   *) PROMPT_COMMAND="_dotfiles_autoupdate;${PROMPT_COMMAND:-}" ;;
 esac
 
+# ── Devcontainer ──────────────────────────────────────────────────────────────
+# Dotfiles for containers started by @devcontainers/cli (e.g. a repo's
+# scripts/dc), which ignores VS Code's dotfiles.* settings.
+export DEVCONTAINER_DOTFILES_REPOSITORY="https://github.com/Jaidan/dotfiles"
+export DEVCONTAINER_DOTFILES_INSTALL_COMMAND="install.sh"
+export DEVCONTAINER_DOTFILES_TARGET_PATH="~/dotfiles"
+
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
 [ -f ~/.locals ] && source ~/.locals
 
