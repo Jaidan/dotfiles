@@ -16,3 +16,5 @@ config/nvim/.netrwhist
 .locals
 .extra
 .path
+
+**/.claude/settings.local.json
