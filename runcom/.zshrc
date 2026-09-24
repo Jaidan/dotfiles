@@ -65,7 +65,7 @@ if [[ -n "$CODESPACE_NAME" ]]; then
 fi
 
 # Added by flyctl installer
-export FLYCTL_INSTALL="/home/codespace/.fly"
+export FLYCTL_INSTALL="$HOME/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
 # ── auto-prune merged worktrees (rate-limited, backgrounded) ─────────────────
