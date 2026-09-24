@@ -44,7 +44,11 @@ _set_prompt() {
   local GREEN=$'\e[1;32m'
   local MAGENTA=$'\e[1;35m'
   local RESET=$'\e[m'
-  PS1="\[$RESET\]\u@\h:\[$GREEN\]\w\[$MAGENTA\]\$(__git_ps1 ' (%s)')\[$RESET\]\$ "
+  local CONTAINER=""
+  if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
+    CONTAINER="\[$MAGENTA\][${DEVCONTAINER_NAME:-devcontainer}]\[$RESET\] "
+  fi
+  PS1="\[$RESET\]$CONTAINER\u@\h:\[$GREEN\]\w\[$MAGENTA\]\$(__git_ps1 ' (%s)')\[$RESET\]\$ "
   PS2='> '
 }
 _set_prompt
@@ -143,7 +147,7 @@ export DEVCONTAINER_DOTFILES_INSTALL_COMMAND="install.sh"
 export DEVCONTAINER_DOTFILES_TARGET_PATH="~/dotfiles"
 
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
-[ -f ~/.locals ] && source ~/.locals
+[ -f ~/.locals ] && source ~/.locals || true
 
 # Added by flyctl installer
 export FLYCTL_INSTALL="/home/codespace/.fly"

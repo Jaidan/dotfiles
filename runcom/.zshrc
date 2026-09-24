@@ -26,6 +26,16 @@ export DEFAULT_USER="${USER}"
 
 source "$ZSH/oh-my-zsh.sh"
 
+# Mark shells running inside a container. agnoster has no segment list to
+# extend, but build_prompt resolves prompt_context by name on every render.
+if [[ -f /.dockerenv || -f /run/.containerenv ]] && (( $+functions[prompt_context] )); then
+  functions[_agnoster_prompt_context]=$functions[prompt_context]
+  prompt_context() {
+    prompt_segment magenta black "⬢ ${DEVCONTAINER_NAME:-devcontainer}"
+    _agnoster_prompt_context
+  }
+fi
+
 # ── Aliases ───────────────────────────────────────────────────────────────────
 [ -f ~/.aliases ] && source ~/.aliases
 
@@ -126,7 +136,7 @@ export DEVCONTAINER_DOTFILES_INSTALL_COMMAND="install.sh"
 export DEVCONTAINER_DOTFILES_TARGET_PATH="~/dotfiles"
 
 # ── Machine-specific overrides (not tracked in git) ───────────────────────────
-[ -f ~/.locals ] && source ~/.locals
+[ -f ~/.locals ] && source ~/.locals || true
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 # Android Studio initialization
 export ANDROID_HOME="$HOME/Library/Android/sdk"
