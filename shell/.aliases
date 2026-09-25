@@ -13,3 +13,12 @@ alias et='vim ~/.tmux.conf'
 alias ex='vim ~/.zshrc'
 tag () { vim -c "tag $1"; }
 alias vimf='nvim $(fzf)'
+
+# pr-flow loops: Sonnet main loop, Opus advisor + subagents, compact at 200k.
+# Flags are session-only; /model or /autocompact inside the session would save as defaults.
+_claude_loop () {
+  CLAUDE_CODE_SUBAGENT_MODEL=opus \
+    claude --model sonnet --advisor opus --autocompact 200k "$@"
+}
+claude-review () { _claude_loop -n review-loop "/pr-flow:review-loop${*:+ $*}"; }
+claude-orch () { _claude_loop -n orchestrate "/pr-flow:orchestrate${*:+ $*}"; }
