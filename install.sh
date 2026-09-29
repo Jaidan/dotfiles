@@ -322,7 +322,8 @@ setup_herdr_plugins() {
       continue
     fi
     info "Installing herdr plugin $spec..."
-    if herdr plugin install -y ${ref:+--ref "$ref"} "$spec"; then
+    # herdr only parses flags after the spec, despite what --help shows
+    if herdr plugin install "$spec" --yes ${ref:+--ref "$ref"}; then
       success "herdr plugin $spec installed"
     else
       warning "herdr plugin $spec failed to install — continuing"
