@@ -1,0 +1,5 @@
+# herdr plugins — one `owner/repo[/subdir]` per line, installed with
+# `herdr plugin install`. Optional second field pins a git ref.
+smarzban/herdr-file-viewer
+alexarthurs/herdr-sidebar/plugins/herdr-sidebar
+tatoalo/herdr-remote-open-url

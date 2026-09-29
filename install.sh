@@ -268,6 +268,93 @@ install_glow_apt() {
   success "glow installed ($(glow --version 2>/dev/null | head -1))"
 }
 
+# ── herdr (terminal workspace manager for AI agents) ─────────────────────────
+#
+# Installed with the official installer on both OSes (into ~/.local/bin) so it
+# self-updates via `herdr update`. ~/.config/herdr is a live runtime directory
+# (sockets, logs, session.json, plugin checkouts), so like ~/.claude we only
+# link config.toml into it and reinstall plugins from a tracked list.
+
+install_herdr() {
+  export PATH="$HOME/.local/bin:$PATH"
+  if command -v herdr &>/dev/null; then
+    info "herdr already installed — skipping"
+    return
+  fi
+  info "Installing herdr..."
+  curl -fsSL https://herdr.dev/install.sh | sh
+  success "herdr installed ($(herdr --version 2>/dev/null | head -1))"
+}
+
+link_herdr() {
+  info "Linking herdr config with stow..."
+  local backup_dir="${1:-$HOME/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)}"
+  local target="$HOME/.config/herdr/config.toml"
+
+  if [[ -e "$target" && ! -L "$target" ]]; then
+    mkdir -p "$backup_dir/.config/herdr"
+    mv "$target" "$backup_dir/.config/herdr/"
+    warning "  Backed up existing: ~/.config/herdr/config.toml"
+  fi
+
+  # --no-folding: on a fresh machine stow would otherwise symlink the whole
+  # ~/.config/herdr dir into the repo, and herdr's runtime state would land here.
+  mkdir -p "$HOME/.config/herdr"
+  stow --restow --no-folding --dir="$DOTFILES_DIR" --target="$HOME" herdr
+  success "herdr config linked"
+}
+
+setup_herdr_plugins() {
+  if ! command -v herdr &>/dev/null || ! command -v jq &>/dev/null; then
+    warning "herdr or jq not found — skipping herdr plugins"
+    return 0
+  fi
+
+  local installed
+  installed="$(herdr plugin list --json 2>/dev/null \
+    | jq -r '.result.plugins[].source | [.owner, .repo, .subdir // empty] | join("/")' 2>/dev/null)" || true
+
+  local spec ref
+  while read -r spec ref _; do
+    [[ -z "$spec" || "$spec" == \#* ]] && continue
+    if grep -qxF "$spec" <<<"$installed"; then
+      info "herdr plugin $spec already installed — skipping"
+      continue
+    fi
+    info "Installing herdr plugin $spec..."
+    if herdr plugin install -y ${ref:+--ref "$ref"} "$spec"; then
+      success "herdr plugin $spec installed"
+    else
+      warning "herdr plugin $spec failed to install — continuing"
+    fi
+  done < "$DOTFILES_DIR/install/herdr-plugins.txt"
+
+  # Agent integrations (session restore / lifecycle state) for agents present here
+  local agent
+  for agent in claude codex; do
+    command -v "$agent" &>/dev/null || continue
+    if herdr integration status 2>/dev/null | grep -q "^$agent: current"; then
+      info "herdr $agent integration current — skipping"
+    else
+      herdr integration install "$agent" && success "herdr $agent integration installed" \
+        || warning "herdr $agent integration failed — continuing"
+    fi
+  done
+}
+
+# ── bin (personal scripts) ───────────────────────────────────────────────────
+#
+# Linked file-by-file into ~/.local/bin. --no-folding so a fresh machine
+# doesn't get ~/.local (or ~/.local/bin) symlinked into the repo, where other
+# installers' binaries (herdr, uv, …) would then land.
+
+link_bin() {
+  info "Linking bin scripts with stow..."
+  mkdir -p "$HOME/.local/bin"
+  stow --restow --no-folding --dir="$DOTFILES_DIR" --target="$HOME" bin
+  success "bin scripts linked"
+}
+
 # ── Default shell ─────────────────────────────────────────────────────────────
 
 setup_zsh() {
@@ -306,6 +393,10 @@ main() {
       setup_fzf
       link_dotfiles
       link_claude
+      install_herdr || warning "herdr install failed — continuing with remaining bootstrap"
+      link_herdr
+      link_bin
+      setup_herdr_plugins
       setup_neovim
       ;;
     Linux)
@@ -315,6 +406,10 @@ main() {
       setup_fzf
       link_dotfiles
       link_claude
+      install_herdr || warning "herdr install failed — continuing with remaining bootstrap"
+      link_herdr
+      link_bin
+      setup_herdr_plugins
       setup_neovim
       setup_zsh
       fix_git_editor

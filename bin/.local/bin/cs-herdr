@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+# cs-herdr — add a GitHub Codespace to herdr as an SSH machine.
+#
+#   cs-herdr            pick a codespace (fzf when there's more than one)
+#   cs-herdr <name>     use a specific codespace, as named by `gh cs list`
+#   cs-herdr -f [name]  re-add even if herdr already has it (e.g. after a rebuild)
+#
+# Safe to re-run. Each run:
+#   1. regenerates ~/.ssh/codespaces from `gh cs ssh --config`, giving every
+#      codespace its bare name as a host alias (gh's own alias embeds the
+#      branch, so it changes whenever you switch branches)
+#   2. refreshes the codespace's host key in ~/.ssh/known_hosts_codespaces —
+#      herdr connects with StrictHostKeyChecking=yes, so gh's default of
+#      UserKnownHostsFile=/dev/null can never work
+#   3. makes sure ~/.local/bin leads PATH for non-interactive ssh on the remote
+#      (the dotfiles .zshenv does this; this covers codespaces that predate it)
+#   4. adds it to herdr, labelled cs-<repo>-<display-name>
+#   5. removes cs-* herdr machines whose codespace has been deleted
+set -euo pipefail
+
+SSH_DIR="$HOME/.ssh"
+SSH_INCLUDE="$SSH_DIR/codespaces"
+KNOWN_HOSTS="$SSH_DIR/known_hosts_codespaces"
+
+info() { printf '\033[0;34m==>\033[0m %s\n' "$*"; }
+die()  { printf '\033[0;31mcs-herdr:\033[0m %s\n' "$*" >&2; exit 1; }
+
+force=0
+if [[ "${1:-}" == "-f" ]]; then force=1; shift; fi
+name="${1:-}"
+
+for cmd in gh herdr jq; do
+  command -v "$cmd" >/dev/null || die "$cmd not found"
+done
+
+codespaces="$(gh codespace list --json name,displayName,repository,state)" \
+  || die "gh codespace list failed (scope error? run: gh auth refresh -h github.com -s codespace)"
+
+# ── Pick a codespace ─────────────────────────────────────────────────────────
+
+if [[ -z "$name" ]]; then
+  rows="$(jq -r '.[] | [.name, .repository, .displayName, .state] | @tsv' <<<"$codespaces")"
+  [[ -n "$rows" ]] || die "no codespaces — create one with: gh cs create -R roverdotcom/web"
+  if [[ "$(wc -l <<<"$rows")" -eq 1 ]]; then
+    name="$(cut -f1 <<<"$rows")"
+  elif command -v fzf >/dev/null; then
+    name="$(fzf --prompt='codespace> ' --delimiter=$'\t' --with-nth=2.. <<<"$rows" | cut -f1)"
+    [[ -n "$name" ]] || exit 1
+  else
+    column -t -s $'\t' <<<"$rows"
+    die "more than one codespace — pass a name: cs-herdr <name>"
+  fi
+fi
+
+cs="$(jq -c --arg n "$name" '.[] | select(.name == $n)' <<<"$codespaces")"
+[[ -n "$cs" ]] || die "no codespace named '$name' (see: gh cs list)"
+label="$(jq -r '"cs-" + (.repository | split("/")[1]) + "-" + (.displayName | ascii_downcase | gsub("[^a-z0-9]+"; "-"))' <<<"$cs")"
+
+# ── SSH config ───────────────────────────────────────────────────────────────
+
+info "Writing $SSH_INCLUDE"
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+
+gh codespace ssh --config \
+  | awk -v kh="$KNOWN_HOSTS" '
+      /^Host cs\./ { split($2, p, "."); print $0 " " p[2]; print "\tHostKeyAlias " p[2]; next }
+      /UserKnownHostsFile/ { print "\tUserKnownHostsFile " kh; next }
+      { print }' > "$tmp"
+cat "$tmp" > "$SSH_INCLUDE"
+chmod 600 "$SSH_INCLUDE"
+
+# Include must come before any Host block in ~/.ssh/config to apply globally
+touch "$SSH_DIR/config"
+if ! grep -qE "^Include (~|$HOME)/\.ssh/codespaces$" "$SSH_DIR/config"; then
+  info "Adding Include to $SSH_DIR/config"
+  { printf 'Include %s\n\n' "$SSH_INCLUDE"; cat "$SSH_DIR/config"; } > "$tmp"
+  cat "$tmp" > "$SSH_DIR/config"
+fi
+
+# ── Host key + remote PATH ───────────────────────────────────────────────────
+
+info "Connecting to $name (starts it if stopped — can take a minute)"
+touch "$KNOWN_HOSTS"
+ssh-keygen -R "$name" -f "$KNOWN_HOSTS" >/dev/null 2>&1 || true
+# shellcheck disable=SC2016  # expanded remotely
+ssh -o StrictHostKeyChecking=accept-new "$name" \
+  'grep -qs "\.local/bin" ~/.zshenv || echo "path=(\"\$HOME/.local/bin\" \$path)" >> ~/.zshenv'
+
+# ── herdr ────────────────────────────────────────────────────────────────────
+
+existing="$(herdr machine list | awk -F'\t' -v t="$name" '$3 == t { print $1 }')"
+if [[ -n "$existing" && "$force" -eq 0 ]]; then
+  info "herdr already has $name — pass -f to re-add"
+else
+  [[ -n "$existing" ]] && herdr machine remove "$existing" >/dev/null
+  info "Adding to herdr as $label"
+  herdr machine add --label "$label" "$name"
+fi
+
+live="$(jq -r '.[].name' <<<"$codespaces")"
+herdr machine list | awk -F'\t' '$2 ~ /^cs-/ { print $1 "\t" $3 }' \
+  | while IFS=$'\t' read -r id target; do
+      grep -qxF "$target" <<<"$live" && continue
+      info "Removing herdr machine for deleted codespace $target"
+      herdr machine remove "$id" >/dev/null
+      ssh-keygen -R "$target" -f "$KNOWN_HOSTS" >/dev/null 2>&1 || true
+    done

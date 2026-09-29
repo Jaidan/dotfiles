@@ -30,19 +30,32 @@ The [GitHub Codespaces dotfiles feature](https://docs.github.com/en/codespaces/s
 
 Enable it at: **github.com/settings/codespaces → Dotfiles**
 
+### Connecting a Codespace to herdr
+
+From the Mac, run:
+
+```bash
+cs-herdr            # pick a codespace (fzf if there's more than one)
+cs-herdr -f <name>  # re-add one after a rebuild
+```
+
+It regenerates `~/.ssh/codespaces` (each codespace gets its bare name as an SSH alias), refreshes the host key, adds the codespace to herdr as `cs-<repo>-<display-name>`, and removes herdr machines for deleted codespaces. It needs `gh` authenticated with the `codespace` scope (`gh auth refresh -h github.com -s codespace`).
+
 ## Structure
 
 Each top-level directory is a [GNU Stow](https://www.gnu.org/software/stow/) package that mirrors `$HOME`.
 
 ```
 .devcontainer/       Codespaces container config
+bin/                 → ~/.local/bin/  (personal scripts, file-level links — e.g. cs-herdr)
 claude/              → ~/.claude/  (statusline scripts; settings merged, not linked)
 config/              → ~/.config/  (nvim)
 git/                 → ~/          (.gitconfig, .gitignore, .git_template/)
-install/             Brewfile
+herdr/               → ~/.config/herdr/config.toml  (file-level link; runtime dir untracked)
+install/             Brewfile, herdr-plugins.txt
 iterm/               iTerm2 config (import via iTerm Preferences → General)
 macos/               macOS system defaults script
-runcom/              → ~/          (.zshrc, .bashrc, .bash_profile)
+runcom/              → ~/          (.zshrc, .zshenv, .bashrc, .bash_profile)
 shell/               → ~/          (.aliases, .colordiffrc)
 tmux/                → ~/          (.tmux.conf)
 vim/                 → ~/          (.vimrc, .vim/)
@@ -73,6 +86,8 @@ make unlink    # Remove all stow symlinks
 make brew      # Install/update Homebrew packages
 make macos     # Apply macOS system preferences
 make claude    # Link Claude statusline + merge base settings
+make herdr     # Link herdr config.toml
+make bin       # Link scripts into ~/.local/bin
 make update    # git pull + re-link
 ```
 

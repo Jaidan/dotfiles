@@ -10,7 +10,7 @@ CONFIG_PACKAGE := config
 CLAUDE_BASE    := $(DOTFILES)install/claude-settings.base.json
 
 .DEFAULT_GOAL := help
-.PHONY: help install link unlink claude brew macos update
+.PHONY: help install link unlink claude herdr bin brew macos update
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -23,6 +23,8 @@ link: ## Symlink dotfiles into $HOME via stow
 	stow --restow --dir=$(DOTFILES) --target=$(HOME)         $(HOME_PACKAGES)
 	stow --restow --dir=$(DOTFILES) --target=$(HOME)/.config $(CONFIG_PACKAGE)
 	$(MAKE) claude
+	$(MAKE) herdr
+	$(MAKE) bin
 
 claude: ## Link Claude statusline scripts + merge portable base settings
 	mkdir -p $(HOME)/.claude
@@ -33,10 +35,20 @@ claude: ## Link Claude statusline scripts + merge portable base settings
 	    && echo "Merged Claude base settings into ~/.claude/settings.json"; \
 	else echo "jq not found — skipping Claude settings merge"; fi
 
+herdr: ## Link herdr config.toml (file-level, never the runtime dir)
+	mkdir -p $(HOME)/.config/herdr
+	stow --restow --no-folding --dir=$(DOTFILES) --target=$(HOME) herdr
+
+bin: ## Link personal scripts into ~/.local/bin (file-level)
+	mkdir -p $(HOME)/.local/bin
+	stow --restow --no-folding --dir=$(DOTFILES) --target=$(HOME) bin
+
 unlink: ## Remove stow symlinks from $HOME
 	stow --delete --dir=$(DOTFILES) --target=$(HOME)         $(HOME_PACKAGES)
 	stow --delete --dir=$(DOTFILES) --target=$(HOME)/.config $(CONFIG_PACKAGE)
 	stow --delete --dir=$(DOTFILES) --target=$(HOME)         claude
+	stow --delete --dir=$(DOTFILES) --target=$(HOME)         herdr
+	stow --delete --dir=$(DOTFILES) --target=$(HOME)         bin
 
 brew: ## Install/update Homebrew packages from Brewfile
 	brew bundle --file=$(DOTFILES)install/Brewfile
