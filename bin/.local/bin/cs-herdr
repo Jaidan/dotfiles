@@ -9,6 +9,7 @@
 #   1. regenerates ~/.ssh/codespaces from `gh cs ssh --config`, giving every
 #      codespace its bare name as a host alias (gh's own alias embeds the
 #      branch, so it changes whenever you switch branches)
+#      and ignoring GH_TOKEN in the gh proxy (see the awk below)
 #   2. refreshes the codespace's host key in ~/.ssh/known_hosts_codespaces —
 #      herdr connects with StrictHostKeyChecking=yes, so gh's default of
 #      UserKnownHostsFile=/dev/null can never work
@@ -68,6 +69,9 @@ gh codespace ssh --config \
   | awk -v kh="$KNOWN_HOSTS" '
       /^Host cs\./ { split($2, p, "."); print $0 " " p[2]; print "\tHostKeyAlias " p[2]; next }
       /UserKnownHostsFile/ { print "\tUserKnownHostsFile " kh; next }
+      # The herdr server runs these proxies with whatever env it started with;
+      # a stale GH_TOKEN there shadows the keyring login and lacks codespace scope
+      /ProxyCommand/ { sub(/ProxyCommand /, "ProxyCommand /usr/bin/env -u GH_TOKEN "); print; next }
       { print }' > "$tmp"
 cat "$tmp" > "$SSH_INCLUDE"
 chmod 600 "$SSH_INCLUDE"
