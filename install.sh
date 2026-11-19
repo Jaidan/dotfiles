@@ -5,6 +5,15 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS="$(uname -s)"
 
+# Roverspaces are Coder workspaces; Coder's dotfiles module clones this repo to
+# ~/.config/coderv2/dotfiles and runs install.sh non-interactively on every
+# start (home is not persistent, so this must be idempotent and fast-ish).
+IS_CODER=false
+[[ "${CODER:-}" == "true" ]] && IS_CODER=true
+
+# herdr, nvim, claude, and our bin scripts all live here; set once for every step.
+export PATH="$HOME/.local/bin:$PATH"
+
 # ── Logging ─────────────────────────────────────────────────────────────────
 
 info()    { printf '\033[0;34m[info]\033[0m     %s\n' "$*"; }
@@ -45,7 +54,10 @@ install_apt_deps() {
                 /usr/share/keyrings/yarnkey.gpg 2>/dev/null; then
     info "Removed stale yarn apt source (if present)"
   fi
-  sudo apt-get update -qq
+  # Devcontainer images carry third-party sources (Roverspaces: chrome,
+  # cloudflare, microsoft, charm, ...). One bad key shouldn't block installing
+  # packages from the sources that did refresh.
+  sudo apt-get update -qq || warning "apt-get update reported errors — installing from what refreshed"
   sudo apt-get install -y -qq \
     git \
     stow \
@@ -130,6 +142,18 @@ link_dotfiles() {
   local home_packages=(git runcom shell tmux vim)
   local config_package=config
 
+  # Roverspaces: Rover's onCreateCommand writes its dev environment (venv,
+  # ./profile, rover-cli, OTel creds) into ~/.zshrc and ~/.bashrc and asks that
+  # dotfiles append rather than replace them. rover-cli also edits them with
+  # `sed -i`, which would turn a symlink back into a plain file anyway.
+  if $IS_CODER; then
+    home_packages=(git shell tmux vim)
+  fi
+
+  # ~/.gitconfig is a real per-machine file that includes ~/.gitconfig.shared.
+  # Runs first so an old-layout symlink is migrated before stow sees it.
+  bash "$DOTFILES_DIR/install/setup-gitconfig.sh"
+
   # Back up any pre-existing real files that stow would conflict with
   for pkg in "${home_packages[@]}"; do
     backup_conflicts "$pkg" "$HOME" "$backup_dir"
@@ -139,7 +163,39 @@ link_dotfiles() {
   mkdir -p "$HOME/.config"
   stow --restow --dir="$DOTFILES_DIR" --target="$HOME"         "${home_packages[@]}"
   stow --restow --dir="$DOTFILES_DIR" --target="$HOME/.config" "$config_package"
+
+  if $IS_CODER; then
+    link_runcom_coder "$backup_dir"
+  fi
   success "Dotfiles linked"
+}
+
+# Roverspaces: link .zshenv (Rover doesn't ship one; herdr's remote bridge
+# needs ~/.local/bin on PATH for non-interactive ssh) and hook our .zshrc onto
+# the end of Rover's. Bash is left entirely to Rover — our .bashrc resets PATH,
+# which would drop the venv and rover-cli entries above it.
+link_runcom_coder() {
+  local backup_dir="$1"
+  local zshenv="$HOME/.zshenv"
+  if [[ -e "$zshenv" && ! -L "$zshenv" ]]; then
+    mkdir -p "$backup_dir"
+    mv "$zshenv" "$backup_dir/"
+    warning "  Backed up existing: ~/.zshenv"
+  fi
+  ln -sfn "$DOTFILES_DIR/runcom/.zshenv" "$zshenv"
+
+  local zshrc="$HOME/.zshrc"
+  local start="# >>> dotfiles (appended by install.sh) >>>"
+  if [[ -L "$zshrc" ]]; then
+    warning "  ~/.zshrc is a symlink — not appending (would write into the target)"
+  elif grep -qF "$start" "$zshrc" 2>/dev/null; then
+    info "  ~/.zshrc already sources dotfiles — skipping"
+  else
+    printf '\n%s\n[ -f "%s" ] && source "%s"\n%s\n' \
+      "$start" "$DOTFILES_DIR/runcom/.zshrc" "$DOTFILES_DIR/runcom/.zshrc" \
+      "# <<< dotfiles <<<" >> "$zshrc"
+    info "  Appended dotfiles .zshrc to Rover's ~/.zshrc"
+  fi
 }
 
 # ── Claude Code config ───────────────────────────────────────────────────────
@@ -173,6 +229,12 @@ merge_claude_settings() {
 }
 
 link_claude() {
+  # Roverspaces point Claude Code at a Rover-managed, synced config dir
+  # (CLAUDE_CONFIG_DIR=/var/run/coder/claude); ~/.claude is never read there.
+  if [[ -n "${CLAUDE_CONFIG_DIR:-}" && "${CLAUDE_CONFIG_DIR%/}" != "$HOME/.claude" ]]; then
+    info "CLAUDE_CONFIG_DIR is managed ($CLAUDE_CONFIG_DIR) — skipping Claude config"
+    return 0
+  fi
   info "Linking Claude config with stow..."
   local backup_dir="${1:-$HOME/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)}"
 
@@ -276,7 +338,6 @@ install_glow_apt() {
 # link config.toml into it and reinstall plugins from a tracked list.
 
 install_herdr() {
-  export PATH="$HOME/.local/bin:$PATH"
   if command -v herdr &>/dev/null; then
     info "herdr already installed — skipping"
     return
@@ -381,6 +442,20 @@ setup_zsh() {
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+# Run one bootstrap step; on failure, warn and keep going so one flaky step
+# (an apt mirror, a GitHub fetch) can't leave a workspace without herdr.
+# The step runs as a background job + wait because bash ignores `set -e`
+# inside anything tested by `||`/`if` — this keeps errexit working within the
+# step. `<&0` keeps stdin attached (async jobs otherwise get /dev/null).
+FAILED_STEPS=()
+step() {
+  "$@" <&0 &
+  if ! wait $!; then
+    warning "$1 failed — continuing with remaining bootstrap"
+    FAILED_STEPS+=("$1")
+  fi
+}
+
 main() {
   info "Dotfiles: $DOTFILES_DIR"
   info "OS:       $OS"
@@ -401,19 +476,20 @@ main() {
       setup_neovim
       ;;
     Linux)
-      install_apt_deps
-      install_glow_apt || warning "glow install failed — continuing with remaining bootstrap"
-      install_oh_my_zsh
-      setup_fzf
-      link_dotfiles
-      link_claude
-      install_herdr || warning "herdr install failed — continuing with remaining bootstrap"
-      link_herdr
-      link_bin
-      setup_herdr_plugins
-      setup_neovim
-      setup_zsh
-      fix_git_editor
+      if $IS_CODER; then info "Coder workspace (Roverspace) detected"; fi
+      step install_apt_deps
+      step install_herdr   # early: it only needs curl, and it's the point of remote boxes
+      step install_glow_apt
+      step install_oh_my_zsh
+      step setup_fzf
+      step link_dotfiles
+      step link_claude
+      step link_herdr
+      step link_bin
+      step setup_herdr_plugins
+      step setup_neovim
+      step setup_zsh
+      step fix_git_editor
       ;;
     *)
       error "Unsupported OS: $OS"
@@ -422,7 +498,14 @@ main() {
   esac
 
   echo
+  if (( ${#FAILED_STEPS[@]} )); then
+    error "Finished with failures: ${FAILED_STEPS[*]}"
+    exit 1
+  fi
   success "All done! Open a new shell or run: source ~/.zshrc"
 }
 
-main "$@"
+# Sourceable for tests: only run when executed directly.
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

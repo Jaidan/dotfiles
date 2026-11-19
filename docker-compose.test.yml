@@ -10,6 +10,39 @@ services:
       - .:/home/dev/dotfiles:ro
     command: bash install.sh
 
+  # Roverspace (Coder) path: seeds Rover-style rc files and ~/.gitconfig, runs
+  # install.sh twice from Coder's clone location, and asserts Rover's files were
+  # appended to (not replaced) and herdr landed in ~/.local/bin.
+  # Usage: docker compose -f docker-compose.test.yml run --rm install-coder
+  install-coder:
+    build:
+      context: .
+      dockerfile: test/Dockerfile
+    volumes:
+      - .:/home/dev/src:ro
+    environment:
+      CODER: "true"
+      CLAUDE_CONFIG_DIR: /var/run/coder/claude
+    command:
+      - bash
+      - -euc
+      - |
+        mkdir -p ~/.config/coderv2 && cp -r ~/src ~/.config/coderv2/dotfiles
+        echo 'export ROVER_MARKER=1' > ~/.zshrc
+        echo 'export ROVER_MARKER=1' > ~/.bashrc
+        printf '[credential "https://github.com"]\n\thelper = !/usr/bin/gh auth git-credential\n' > ~/.gitconfig
+        cd ~/.config/coderv2/dotfiles
+        bash install.sh && bash install.sh
+        for f in .zshrc .bashrc .gitconfig; do test ! -L ~/$$f || { echo "FAIL: ~/$$f replaced by symlink"; exit 1; }; done
+        grep -q ROVER_MARKER ~/.zshrc && grep -q ROVER_MARKER ~/.bashrc
+        test "$$(grep -c '>>> dotfiles' ~/.zshrc)" -eq 1
+        git config --get credential.https://github.com.helper | grep -q gh
+        test "$$(git config user.email)" = john@rover.com
+        test -x ~/.local/bin/herdr
+        test ! -e ~/.claude/statusline.sh
+        zsh -c 'command -v herdr' | grep -q .local/bin/herdr
+        echo "PASS: roverspace install"
+
   # Runs install.sh then drops to an interactive zsh shell for manual inspection.
   # Falls back to bash if install.sh fails before zsh is installed.
   # Usage: docker compose -f docker-compose.test.yml run --rm shell

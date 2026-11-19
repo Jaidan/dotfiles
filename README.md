@@ -41,6 +41,20 @@ cs-herdr -f <name>  # re-add one after a rebuild
 
 It regenerates `~/.ssh/codespaces` (each codespace gets its bare name as an SSH alias), refreshes the host key, adds the codespace to herdr as `cs-<repo>-<display-name>`, and removes herdr machines for deleted codespaces. It needs `gh` authenticated with the `codespace` scope (`gh auth refresh -h github.com -s codespace`).
 
+## Roverspaces (Coder)
+
+Roverspaces run this repo through Coder's dotfiles integration: it's cloned to `~/.config/coderv2/dotfiles` and `install.sh` runs non-interactively on every workspace start (home isn't persistent). When `CODER=true`, `install.sh`:
+
+- **appends** a `source` line for our `.zshrc` to Rover's `~/.zshrc` instead of replacing it. Rover's `onCreateCommand` puts the venv, `./profile`, `rover-cli` and OTel creds there and asks dotfiles not to overwrite it. `~/.bashrc` is left to Rover entirely. Only `.zshenv` is symlinked.
+- skips the Claude config, because Roverspaces use a Rover-managed `CLAUDE_CONFIG_DIR`.
+- installs herdr right after apt, so a later failure can't leave the box without it.
+
+Every Linux step is isolated: a failure is reported, the rest still run, and the script exits non-zero at the end. Test the Roverspace path with `docker compose -f docker-compose.test.yml run --rm install-coder`.
+
+### git config layout
+
+`~/.gitconfig` is a **real per-machine file**. The tracked settings live in `git/.gitconfig.shared`, linked to `~/.gitconfig.shared` and pulled in by an `[include]` at the top of `~/.gitconfig` (`install/setup-gitconfig.sh`, idempotent, also run by `make link`). Credential helpers and other machine-specific entries stay in `~/.gitconfig`, so `gh auth setup-git`, Codespaces and Coder never write into the repo. `git config --global --get` doesn't follow includes; use `git config --get`.
+
 ## Structure
 
 Each top-level directory is a [GNU Stow](https://www.gnu.org/software/stow/) package that mirrors `$HOME`.
@@ -50,7 +64,7 @@ Each top-level directory is a [GNU Stow](https://www.gnu.org/software/stow/) pac
 bin/                 → ~/.local/bin/  (personal scripts, file-level links — e.g. cs-herdr)
 claude/              → ~/.claude/  (statusline scripts; settings merged, not linked)
 config/              → ~/.config/  (nvim)
-git/                 → ~/          (.gitconfig, .gitignore, .git_template/)
+git/                 → ~/          (.gitconfig.shared, .gitignore, .git_template/; ~/.gitconfig stays a real file)
 herdr/               → ~/.config/herdr/config.toml  (file-level link; runtime dir untracked)
 install/             Brewfile, herdr-plugins.txt
 iterm/               iTerm2 config (import via iTerm Preferences → General)
