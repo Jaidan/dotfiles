@@ -10,3 +10,6 @@ key = "prefix+shift+f"
 type = "plugin_action"
 command = "herdr-file-viewer.open-file-viewer-tab"
 description = "open file viewer in tab"
+
+[ui.toast]
+delivery = "system"
