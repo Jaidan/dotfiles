@@ -20,6 +20,7 @@ install: brew link ## Full install: Homebrew packages + symlinks
 
 link: ## Symlink dotfiles into $HOME via stow
 	mkdir -p $(HOME)/.config
+	bash $(DOTFILES)install/setup-gitconfig.sh
 	stow --restow --dir=$(DOTFILES) --target=$(HOME)         $(HOME_PACKAGES)
 	stow --restow --dir=$(DOTFILES) --target=$(HOME)/.config $(CONFIG_PACKAGE)
 	$(MAKE) claude
